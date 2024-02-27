@@ -42,14 +42,14 @@ class Wifi:
             )
 
         def _any(cmd_result):
-            KEY_CONTENT = ["Key Content", "Ключ безопасности"]
+            KEY_CONTENT = ["Key Content", "Содержимое ключа"]
             return any(keyword in cmd_result for keyword in KEY_CONTENT)
 
         cmd_results = decode_text(
             subprocess.check_output(f'netsh wlan show profile "{profile}" key=clear')
         ).split("\r\n")
         password = [
-            cmd_result.split(":")[1][1:]
+            cmd_result.split(":")[1][:]
             for cmd_result in cmd_results
             if _any(cmd_result)
         ]
