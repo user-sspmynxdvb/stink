@@ -8,8 +8,8 @@ class Screenshot:
     """
     Takes a screenshot of the monitors.
     """
-    def __init__(self, folder: str):
 
+    def __init__(self, folder: str):
         self.__folder = folder
         self.__storage = MemoryStorage()
 
@@ -27,7 +27,9 @@ class Screenshot:
         screenshots = capture.create_in_memory()
 
         for index, monitor in enumerate(screenshots):
-            self.__storage.add_from_memory(path.join(self.__folder, f"monitor-{index}.png"), monitor)
+            self.__storage.add_from_memory(
+                path.join(self.__folder, f"monitor-{index}.png"), monitor
+            )
 
     def run(self) -> List:
         """
@@ -40,7 +42,6 @@ class Screenshot:
         - None.
         """
         try:
-
             self.__create_screen()
 
             return self.__storage.get_data()

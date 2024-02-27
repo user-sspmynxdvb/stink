@@ -3,12 +3,14 @@ from os import path, walk
 from zipfile import ZipFile, ZIP_DEFLATED
 from typing import Union, List, Tuple, AnyStr, Optional
 from getpass import getuser
-from datetime import date
+from random import random
+
 
 class MemoryStorage:
     """
     Creates a storage in the memory.
     """
+
     def __init__(self):
         self.__buffer = BytesIO()
         self.__files = []
@@ -41,7 +43,9 @@ class MemoryStorage:
             if zip_path:
                 self.__files.append((zip_path, open(source_path, "rb").read()))
             else:
-                self.__files.append((path.basename(source_path), open(source_path, "rb").read()))
+                self.__files.append(
+                    (path.basename(source_path), open(source_path, "rb").read())
+                )
 
         elif path.isdir(source_path):
             for folder_name, _, file_names in walk(source_path):
@@ -55,7 +59,9 @@ class MemoryStorage:
 
                         self.__files.append((name_in_zip, open(file_path, "rb").read()))
                     except Exception as e:
-                        print(f"[Storage]: Error while copying a file {file_name} - {repr(e)}")
+                        print(
+                            f"[Storage]: Error while copying a file {file_name} - {repr(e)}"
+                        )
         else:
             print("[Storage]: The file is unsupported.")
 
@@ -71,20 +77,24 @@ class MemoryStorage:
         """
         return self.__files
 
-    def create_zip(self, files: Optional[List[Tuple[str, AnyStr]]] = None, output_file_path: str = f'{getuser()}.{date.today().strftime("%d.%m.%Y")}.zip'):
+    def create_zip(
+        self,
+        files: Optional[List[Tuple[str, AnyStr]]] = None,
+        output_file_path: str = f"{getuser()}.{random()}.zip",
+    ):
         """
         Adds files from a list of data returned by get_data method of other MemoryStorage objects into one archive.
-    
+
         Parameters:
         - files [list]: List of files for creating the archive.
         - output_file_path [str]: Path to the output ZIP file.
-    
+
         Returns:
         None
         """
         if files is None:
             files = self.__files
-    
-        with ZipFile(output_file_path, mode='w', compression=ZIP_DEFLATED) as zip_file:
+
+        with ZipFile(output_file_path, mode="w", compression=ZIP_DEFLATED) as zip_file:
             for file_name, content in files:
                 zip_file.writestr(file_name, content)

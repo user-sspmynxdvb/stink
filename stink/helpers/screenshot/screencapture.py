@@ -4,7 +4,20 @@ from zlib import crc32, compress
 from sys import getwindowsversion
 from ctypes import POINTER, WINFUNCTYPE, c_void_p
 from ctypes import WinDLL, windll, Array, c_char, create_string_buffer, sizeof
-from ctypes.wintypes import BOOL, DOUBLE, DWORD, HBITMAP, HDC, HGDIOBJ, HWND, INT, LPARAM, LPRECT, RECT, UINT
+from ctypes.wintypes import (
+    BOOL,
+    DOUBLE,
+    DWORD,
+    HBITMAP,
+    HDC,
+    HGDIOBJ,
+    HWND,
+    INT,
+    LPARAM,
+    LPRECT,
+    RECT,
+    UINT,
+)
 from threading import Lock, current_thread, main_thread
 from typing import Any, Callable, List, Optional, Tuple, Union, Dict
 
@@ -22,7 +35,11 @@ CFUNCTIONS = {
     "DeleteObject": ("gdi32", [HGDIOBJ], INT),
     "EnumDisplayMonitors": ("user32", [HDC, c_void_p, MONITORNUMPROC, LPARAM], BOOL),
     "GetDeviceCaps": ("gdi32", [HWND, INT], INT),
-    "GetDIBits": ("gdi32", [HDC, HBITMAP, UINT, UINT, c_void_p, POINTER(BitmapInfo), UINT], BOOL),
+    "GetDIBits": (
+        "gdi32",
+        [HDC, HBITMAP, UINT, UINT, c_void_p, POINTER(BitmapInfo), UINT],
+        BOOL,
+    ),
     "GetSystemMetrics": ("user32", [INT], INT),
     "GetWindowDC": ("user32", [HWND], HDC),
     "SelectObject": ("gdi32", [HDC, HGDIOBJ], HGDIOBJ),
@@ -32,7 +49,6 @@ lock = Lock()
 
 
 class Screencapture:
-
     bmp = None
     memdc = None
     Monitor = Dict[str, int]
@@ -40,7 +56,6 @@ class Screencapture:
     _srcdc_dict = {}
 
     def __init__(self, **_: Any):
-
         self.cls_image = Screen
         self.compression_level = 6
         self.with_cursor = False
@@ -71,7 +86,6 @@ class Screencapture:
 
     @property
     def monitors(self):
-
         if not self._monitors:
             with lock:
                 self._monitors_impl()
@@ -80,7 +94,6 @@ class Screencapture:
 
     @staticmethod
     def _merge(screenshot: Screen, cursor: Screen):
-
         (cx, cy), (cw, ch) = cursor.position, cursor.size
         (x, y), (w, h) = screenshot.position, screenshot.size
 
@@ -116,18 +129,26 @@ class Screencapture:
                     continue
 
                 if alpha == 255:
-                    screen_data[spos:spos + 3] = cursor_data[cpos: cpos + 3]
+                    screen_data[spos : spos + 3] = cursor_data[cpos : cpos + 3]
 
                 else:
                     alpha = alpha / 255
                     for item in rgb:
-                        screen_data[spos + item] = int(cursor_data[cpos + item] * alpha + screen_data[spos + item] * (1 - alpha))
+                        screen_data[spos + item] = int(
+                            cursor_data[cpos + item] * alpha
+                            + screen_data[spos + item] * (1 - alpha)
+                        )
 
         return screenshot
 
     @staticmethod
-    def _cfactory(attr: Any, func: str, argtypes: List[Any], restype: Any, errcheck: Optional[Callable] = None):
-
+    def _cfactory(
+        attr: Any,
+        func: str,
+        argtypes: List[Any],
+        restype: Any,
+        errcheck: Optional[Callable] = None,
+    ):
         meth = getattr(attr, func)
         meth.argtypes = argtypes
         meth.restype = restype
@@ -136,7 +157,6 @@ class Screencapture:
             meth.errcheck = errcheck
 
     def _set_cfunctions(self) -> None:
-
         cfactory = self._cfactory
         attrs = {
             "gdi32": self.gdi32,
@@ -152,7 +172,6 @@ class Screencapture:
             )
 
     def _set_dpi_awareness(self) -> None:
-
         version = getwindowsversion()[:2]
 
         if version >= (6, 3):
@@ -162,9 +181,10 @@ class Screencapture:
             self.user32.SetProcessDPIAware()
 
     def _get_srcdc(self) -> int:
-
         current_thread_index = current_thread()
-        current_srcdc = Screencapture._srcdc_dict.get(current_thread_index) or Screencapture._srcdc_dict.get(main_thread())
+        current_srcdc = Screencapture._srcdc_dict.get(
+            current_thread_index
+        ) or Screencapture._srcdc_dict.get(main_thread())
 
         if current_srcdc:
             srcdc = current_srcdc
@@ -176,7 +196,6 @@ class Screencapture:
         return srcdc
 
     def _monitors_impl(self) -> None:
-
         int_ = int
         user32 = self.user32
         get_system_metrics = user32.GetSystemMetrics
@@ -191,7 +210,6 @@ class Screencapture:
         )
 
         def _callback(monitor: int, data: HDC, rect: LPRECT, dc_: LPARAM) -> int:
-
             rct = rect.contents
             self._monitors.append(
                 {
@@ -208,12 +226,10 @@ class Screencapture:
         user32.EnumDisplayMonitors(0, 0, callback, 0)
 
     def _grab_impl(self, monitor: Monitor) -> Screen:
-
         srcdc, memdc = self._get_srcdc(), Screencapture.memdc
         width, height = monitor["width"], monitor["height"]
 
         if (self._bbox["height"], self._bbox["width"]) != (height, width):
-
             self._bbox = monitor
             self._bmi.bmiHeader.biWidth = width
             self._bmi.bmiHeader.biHeight = -height
@@ -225,8 +241,20 @@ class Screencapture:
             Screencapture.bmp = self.gdi32.CreateCompatibleBitmap(srcdc, width, height)
             self.gdi32.SelectObject(memdc, Screencapture.bmp)
 
-        self.gdi32.BitBlt(memdc, 0, 0, width, height, srcdc, monitor["left"], monitor["top"], SRCCOPY | CAPTUREBLT)
-        bits = self.gdi32.GetDIBits(memdc, Screencapture.bmp, 0, height, self._data, self._bmi, DIB_RGB_COLORS)
+        self.gdi32.BitBlt(
+            memdc,
+            0,
+            0,
+            width,
+            height,
+            srcdc,
+            monitor["left"],
+            monitor["top"],
+            SRCCOPY | CAPTUREBLT,
+        )
+        bits = self.gdi32.GetDIBits(
+            memdc, Screencapture.bmp, 0, height, self._data, self._bmi, DIB_RGB_COLORS
+        )
 
         if bits != height:
             print("gdi32.GetDIBits() failed.")
@@ -237,7 +265,6 @@ class Screencapture:
         return None
 
     def grab(self, monitor: Union[Monitor, Tuple[int, int, int, int]]):
-
         if isinstance(monitor, tuple):
             monitor = {
                 "left": monitor[0],
@@ -247,37 +274,41 @@ class Screencapture:
             }
 
         with lock:
-
             screenshot = self._grab_impl(monitor)
             if self.with_cursor:
-
                 cursor = self._cursor_impl()
                 screenshot = self._merge(screenshot, cursor)
 
             return screenshot
 
     def save_in_memory(self):
-
-        monitors = [dict(monitor) for monitor in set(tuple(monitor.items()) for monitor in self.monitors)]
+        monitors = [
+            dict(monitor)
+            for monitor in set(tuple(monitor.items()) for monitor in self.monitors)
+        ]
 
         for index, display in enumerate(monitors):
             sct = self.grab(display)
-            output = self.create_png(sct.rgb, sct.size, level=self.compression_level, output=None)
+            output = self.create_png(
+                sct.rgb, sct.size, level=self.compression_level, output=None
+            )
 
             yield output
 
     def create_in_memory(self, **kwargs: Any):
-
         kwargs["monitor"] = kwargs.get("monitor", 1)
         return [image for image in self.save_in_memory()]
 
     @staticmethod
-    def create_png(data: bytes, size: Tuple[int, int], level: int = 6, output: Optional[str] = None):
-
+    def create_png(
+        data: bytes, size: Tuple[int, int], level: int = 6, output: Optional[str] = None
+    ):
         width, height = size
         line = width * 3
         png_filter = pack(">B", 0)
-        scanlines = b"".join([png_filter + data[y * line:y * line + line] for y in range(height)])
+        scanlines = b"".join(
+            [png_filter + data[y * line : y * line + line] for y in range(height)]
+        )
         magic = pack(">8B", 137, 80, 78, 71, 13, 10, 26, 10)
 
         ihdr = [b"", b"IHDR", b"", b""]

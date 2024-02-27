@@ -7,8 +7,8 @@ class Message:
     """
     Shows a fake error window.
     """
-    def __init__(self):
 
+    def __init__(self):
         self.__config = MessageConfig()
 
     def __create_message_window(self) -> None:
@@ -21,7 +21,9 @@ class Message:
         Returns:
         - None.
         """
-        windll.user32.MessageBoxW(0, self.__config.MessageDescription, self.__config.MessageTitle, 0x10)
+        windll.user32.MessageBoxW(
+            0, self.__config.MessageDescription, self.__config.MessageTitle, 0x10
+        )
 
     def run(self) -> None:
         """
@@ -34,7 +36,6 @@ class Message:
         - None.
         """
         try:
-
             self.__create_message_window()
 
         except Exception as e:

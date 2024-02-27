@@ -9,7 +9,7 @@ from .structures import (
     MemoryStatusEx,
     UlargeInteger,
     BitmapInfoHeader,
-    BitmapInfo
+    BitmapInfo,
 )
 from .screenshot import Screencapture
 from .cipher import AESModeOfOperationGCM
@@ -29,5 +29,5 @@ __all__ = [
     "BitmapInfo",
     "Screencapture",
     "AESModeOfOperationGCM",
-    "MemoryStorage"
+    "MemoryStorage",
 ]
