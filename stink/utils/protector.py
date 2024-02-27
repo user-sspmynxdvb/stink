@@ -16,7 +16,7 @@ from winreg import (
 )
 
 from stink.enums import Protectors
-from stink.modules import System, Processes
+from stink.modules import Processes
 from stink.helpers.config import ProtectorConfig
 
 
@@ -75,8 +75,8 @@ class Protector:
         - bool: True or False.
         """
         return (
-            ":".join(findall("..", "%012x" % getnode())).lower()
-            in self.__config.MacAddresses
+                ":".join(findall("..", "%012x" % getnode())).lower()
+                in self.__config.MacAddresses
         )
 
     def __check_computer(self) -> bool:
@@ -115,12 +115,12 @@ class Protector:
         """
         try:
             return (
-                urlopen(url=self.__config.IPUrl, timeout=3)
-                .read()
-                .decode("utf-8")
-                .lower()
-                .strip()
-                == "true"
+                    urlopen(url=self.__config.IPUrl, timeout=3)
+                    .read()
+                    .decode("utf-8")
+                    .lower()
+                    .strip()
+                    == "true"
             )
         except:
             return False
@@ -154,16 +154,16 @@ class Protector:
         """
         try:
             with OpenKey(
-                HKEY_LOCAL_MACHINE,
-                r"SYSTEM\CurrentControlSet\Services\Disk\Enum",
-                0,
-                KEY_READ,
+                    HKEY_LOCAL_MACHINE,
+                    r"SYSTEM\CurrentControlSet\Services\Disk\Enum",
+                    0,
+                    KEY_READ,
             ) as reg_key:
                 value = QueryValueEx(reg_key, "0")[0]
 
                 if any(
-                    item.lower() in value.lower()
-                    for item in self.__config.RegistryEnums
+                        item.lower() in value.lower()
+                        for item in self.__config.RegistryEnums
                 ):
                     return True
 
@@ -182,8 +182,8 @@ class Protector:
 
                     for item in range(count):
                         if not any(
-                            value.lower() in EnumKey(reg_key, item).lower()
-                            for value in self.__config.RegistryEnums
+                                value.lower() in EnumKey(reg_key, item).lower()
+                                for value in self.__config.RegistryEnums
                         ):
                             continue
 
@@ -191,9 +191,6 @@ class Protector:
 
             except:
                 pass
-
-        if any(item.lower() in System.get_video_card() for item in self.__config.Cards):
-            return True
 
         if any(path.exists(item) for item in self.__config.Dlls):
             return True

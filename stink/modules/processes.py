@@ -8,7 +8,7 @@ from stink.helpers import functions, ProcessMemoryCountersEx, MemoryStorage
 
 class Processes:
     """
-    Collects all running processes.
+    Collects all running rocesses.
     """
 
     def __init__(self, folder: str):

