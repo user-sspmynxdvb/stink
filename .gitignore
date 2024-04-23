@@ -7,3 +7,4 @@ main.dist/
 main.onefile-build/
 /t.dist
 *.exe
+*.zip

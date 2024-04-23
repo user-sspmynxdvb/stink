@@ -11,7 +11,6 @@ from .structures import (
     BitmapInfoHeader,
     BitmapInfo,
 )
-from .screenshot import Screencapture
 from .cipher import AESModeOfOperationGCM
 from .storage import MemoryStorage
 
@@ -27,7 +26,6 @@ __all__ = [
     "UlargeInteger",
     "BitmapInfoHeader",
     "BitmapInfo",
-    "Screencapture",
     "AESModeOfOperationGCM",
     "MemoryStorage",
 ]

