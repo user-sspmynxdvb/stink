@@ -5,3 +5,5 @@ main.exe
 main.build/
 main.dist/
 main.onefile-build/
+/t.dist
+*.exe

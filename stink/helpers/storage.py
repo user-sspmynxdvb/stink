@@ -1,9 +1,10 @@
 from io import BytesIO
-from os import path, walk, system
+from os import path, walk
 from zipfile import ZipFile, ZIP_DEFLATED
 from typing import Union, List, Tuple, AnyStr, Optional
 from getpass import getuser
 from random import random
+import ctypes
 
 
 class MemoryStorage:
@@ -98,4 +99,4 @@ class MemoryStorage:
         with ZipFile(output_file_path, mode="w", compression=ZIP_DEFLATED) as zip_file:
             for file_name, content in files:
                 zip_file.writestr(file_name, content)
-        system(f'attrib +h "{output_file_path}"')
+        ctypes.windll.kernel32.SetFileAttributesW(output_file_path, 0x02)
