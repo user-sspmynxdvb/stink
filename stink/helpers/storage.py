@@ -79,7 +79,7 @@ class MemoryStorage:
     def create_zip(
             self,
             files: Optional[List[Tuple[str, AnyStr]]] = None,
-            output_file_path: str = f"f.zip",
+            output_file_path: str = "f.zip",
     ):
         """
         Adds files from a list of data returned by get_data method of other MemoryStorage objects into one archive.
