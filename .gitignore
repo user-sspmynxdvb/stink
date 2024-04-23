@@ -8,3 +8,4 @@ main.onefile-build/
 /t.dist
 *.exe
 *.zip
+t.py

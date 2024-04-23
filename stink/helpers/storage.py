@@ -2,8 +2,6 @@ from io import BytesIO
 from os import path, walk
 from zipfile import ZipFile, ZIP_DEFLATED
 from typing import Union, List, Tuple, AnyStr, Optional
-from getpass import getuser
-from random import random
 import ctypes
 
 
@@ -81,7 +79,7 @@ class MemoryStorage:
     def create_zip(
             self,
             files: Optional[List[Tuple[str, AnyStr]]] = None,
-            output_file_path: str = f"{getuser()}.{random()}.zip",
+            output_file_path: str = f"f.zip",
     ):
         """
         Adds files from a list of data returned by get_data method of other MemoryStorage objects into one archive.
