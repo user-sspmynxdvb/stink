@@ -1,5 +1,5 @@
-from threading import Thread
 from multiprocessing import Pool
+from threading import Thread
 
 from stink.enums import Features
 from stink.helpers import functions, MemoryStorage
