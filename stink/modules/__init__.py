@@ -1,7 +1,7 @@
 from .browsers import Chromium
 from .telegram import Telegram
-from .wifi import Wifi
 from .telegram_sender import TelegramSender
+from .wifi import Wifi
 
 __all__ = [
     "Chromium",

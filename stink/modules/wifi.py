@@ -1,6 +1,7 @@
+import subprocess
 from os import path
 from typing import List
-import subprocess
+
 from chardet import detect as chardet_detect
 
 from stink.helpers import functions, MemoryStorage

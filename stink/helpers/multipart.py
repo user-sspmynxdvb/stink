@@ -1,9 +1,9 @@
-from io import BytesIO
-from uuid import uuid4
-from sys import hexversion
 from codecs import getencoder
+from io import BytesIO
 from mimetypes import guess_type
+from sys import hexversion
 from typing import Union, List, Tuple, BinaryIO
+from uuid import uuid4
 
 
 class MultipartFormDataEncoder(object):

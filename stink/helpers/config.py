@@ -1,6 +1,6 @@
 from enum import Enum
-from os import environ
 from getpass import getuser
+from os import environ
 
 sys_root = environ.get("SystemRoot", r"C:\Windows")
 user_profile = environ.get("USERPROFILE")

@@ -1,4 +1,3 @@
-from ctypes.wintypes import DWORD, ULONG, CHAR, MAX_PATH, LONG, WORD
 from ctypes import (
     Structure,
     POINTER,
@@ -9,6 +8,7 @@ from ctypes import (
     c_uint32,
     c_ulonglong,
 )
+from ctypes.wintypes import DWORD, ULONG, CHAR, MAX_PATH, LONG, WORD
 
 
 class DataBlob(Structure):
