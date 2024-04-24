@@ -143,12 +143,12 @@ class TelegramSender(AbstractSender):
         Returns:
         - None.
         """
+        with open(file_path, "rb") as file:
+            self.__data = file
+            self.__zip_name = file_path
 
-        self.__data = open(file_path, "rb")
-        self.__zip_name = file_path
-
-        try:
-            self._create_unverified_https()
-            self.__send_archive()
-        except Exception as e:
-            print(f"[Telegram sender]: {repr(e)}")
+            try:
+                self._create_unverified_https()
+                self.__send_archive()
+            except Exception as e:
+                print(f"[Telegram sender]: {repr(e)}")
