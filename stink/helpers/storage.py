@@ -1,6 +1,5 @@
 import ctypes
 from io import BytesIO
-from os import path, walk
 from typing import Union, List, Tuple, AnyStr, Optional
 from zipfile import ZipFile, ZIP_DEFLATED
 
@@ -27,43 +26,6 @@ class MemoryStorage:
         """
         self.__files.append((source_path, content))
 
-    def add_from_disk(self, source_path: str, zip_path: Optional[str] = None) -> None:
-        """
-        Adds a file path to the list of files.
-
-        Parameters:
-        - source_path [str]: File name or path to be copied.
-        - zip_path [str]: Path to the file or folder in the archive.
-
-        Returns:
-        - None.
-        """
-        if path.isfile(source_path):
-            if zip_path:
-                self.__files.append((zip_path, open(source_path, "rb").read()))
-            else:
-                self.__files.append(
-                    (path.basename(source_path), open(source_path, "rb").read())
-                )
-
-        elif path.isdir(source_path):
-            for folder_name, _, file_names in walk(source_path):
-                for file_name in file_names:
-                    try:
-                        file_path = path.join(folder_name, file_name)
-                        name_in_zip = path.relpath(file_path, source_path)
-
-                        if zip_path:
-                            name_in_zip = path.join(zip_path, name_in_zip)
-
-                        self.__files.append((name_in_zip, open(file_path, "rb").read()))
-                    except Exception as e:
-                        print(
-                            f"[Storage]: Error while copying a file {file_name} - {repr(e)}"
-                        )
-        else:
-            print("[Storage]: The file is unsupported.")
-
     def get_data(self) -> List:
         """
         Returns the contents of the archive.
@@ -77,9 +39,9 @@ class MemoryStorage:
         return self.__files
 
     def create_zip(
-        self,
-        files: Optional[List[Tuple[str, AnyStr]]] = None,
-        output_file_path: str = "f.zip",
+            self,
+            files: Optional[List[Tuple[str, AnyStr]]] = None,
+            output_file_path: str = "f.zip",
     ):
         """
         Adds files from a list of data returned by get_data method of other MemoryStorage objects into one archive.

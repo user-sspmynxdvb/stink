@@ -23,13 +23,16 @@ try:
 except Exception:
     xrange = range
 
+
     def _string_to_bytes(text):
         if isinstance(text, bytes):
             return text
         return [ord(c) for c in text]
 
+
     def _bytes_to_string(binary):
         return bytes(binary)
+
 
     def _concat_list(a, b):
         return a + bytes(b)
@@ -3694,7 +3697,7 @@ class AES(object):
         round_key_count = (rounds + 1) * 4
         KC = len(key) // 4
 
-        tk = [struct.unpack(">i", key[i : i + 4])[0] for i in xrange(0, len(key), 4)]
+        tk = [struct.unpack(">i", key[i: i + 4])[0] for i in xrange(0, len(key), 4)]
 
         for i in xrange(0, KC):
             self._Ke[i // 4][i % 4] = tk[i]
@@ -3705,11 +3708,11 @@ class AES(object):
         while t < round_key_count:
             tt = tk[KC - 1]
             tk[0] ^= (
-                (self.S[(tt >> 16) & 0xFF] << 24)
-                ^ (self.S[(tt >> 8) & 0xFF] << 16)
-                ^ (self.S[tt & 0xFF] << 8)
-                ^ self.S[(tt >> 24) & 0xFF]
-                ^ (self.rcon[rconpointer] << 24)
+                    (self.S[(tt >> 16) & 0xFF] << 24)
+                    ^ (self.S[(tt >> 8) & 0xFF] << 16)
+                    ^ (self.S[tt & 0xFF] << 8)
+                    ^ self.S[(tt >> 24) & 0xFF]
+                    ^ (self.rcon[rconpointer] << 24)
             )
             rconpointer += 1
 
@@ -3723,10 +3726,10 @@ class AES(object):
                 tt = tk[KC // 2 - 1]
 
                 tk[KC // 2] ^= (
-                    self.S[tt & 0xFF]
-                    ^ (self.S[(tt >> 8) & 0xFF] << 8)
-                    ^ (self.S[(tt >> 16) & 0xFF] << 16)
-                    ^ (self.S[(tt >> 24) & 0xFF] << 24)
+                        self.S[tt & 0xFF]
+                        ^ (self.S[(tt >> 8) & 0xFF] << 8)
+                        ^ (self.S[(tt >> 16) & 0xFF] << 16)
+                        ^ (self.S[(tt >> 24) & 0xFF] << 24)
                 )
 
                 for i in xrange(KC // 2 + 1, KC):
@@ -3743,10 +3746,10 @@ class AES(object):
             for j in xrange(0, 4):
                 tt = self._Kd[r][j]
                 self._Kd[r][j] = (
-                    self.U1[(tt >> 24) & 0xFF]
-                    ^ self.U2[(tt >> 16) & 0xFF]
-                    ^ self.U3[(tt >> 8) & 0xFF]
-                    ^ self.U4[tt & 0xFF]
+                        self.U1[(tt >> 24) & 0xFF]
+                        ^ self.U2[(tt >> 16) & 0xFF]
+                        ^ self.U3[(tt >> 8) & 0xFF]
+                        ^ self.U4[tt & 0xFF]
                 )
 
     def encrypt(self, plaintext):
@@ -3758,18 +3761,18 @@ class AES(object):
         a = [0, 0, 0, 0]
 
         t = [
-            (_compact_word(plaintext[4 * i : 4 * i + 4]) ^ self._Ke[0][i])
+            (_compact_word(plaintext[4 * i: 4 * i + 4]) ^ self._Ke[0][i])
             for i in xrange(0, 4)
         ]
 
         for r in xrange(1, rounds):
             for i in xrange(0, 4):
                 a[i] = (
-                    self.T1[(t[i] >> 24) & 0xFF]
-                    ^ self.T2[(t[(i + s1) % 4] >> 16) & 0xFF]
-                    ^ self.T3[(t[(i + s2) % 4] >> 8) & 0xFF]
-                    ^ self.T4[t[(i + s3) % 4] & 0xFF]
-                    ^ self._Ke[r][i]
+                        self.T1[(t[i] >> 24) & 0xFF]
+                        ^ self.T2[(t[(i + s1) % 4] >> 16) & 0xFF]
+                        ^ self.T3[(t[(i + s2) % 4] >> 8) & 0xFF]
+                        ^ self.T4[t[(i + s3) % 4] & 0xFF]
+                        ^ self._Ke[r][i]
                 )
             t = copy.copy(a)
 
@@ -3792,18 +3795,18 @@ class AES(object):
         a = [0, 0, 0, 0]
 
         t = [
-            (_compact_word(ciphertext[4 * i : 4 * i + 4]) ^ self._Kd[0][i])
+            (_compact_word(ciphertext[4 * i: 4 * i + 4]) ^ self._Kd[0][i])
             for i in xrange(0, 4)
         ]
 
         for r in xrange(1, rounds):
             for i in xrange(0, 4):
                 a[i] = (
-                    self.T5[(t[i] >> 24) & 0xFF]
-                    ^ self.T6[(t[(i + s1) % 4] >> 16) & 0xFF]
-                    ^ self.T7[(t[(i + s2) % 4] >> 8) & 0xFF]
-                    ^ self.T8[t[(i + s3) % 4] & 0xFF]
-                    ^ self._Kd[r][i]
+                        self.T5[(t[i] >> 24) & 0xFF]
+                        ^ self.T6[(t[(i + s1) % 4] >> 16) & 0xFF]
+                        ^ self.T7[(t[(i + s2) % 4] >> 8) & 0xFF]
+                        ^ self.T8[t[(i + s3) % 4] & 0xFF]
+                        ^ self._Kd[r][i]
                 )
             t = copy.copy(a)
 
@@ -3878,7 +3881,7 @@ class AESModeOfOperationCTR(AESStreamModeOfOperation):
         plaintext = _string_to_bytes(plaintext)
 
         encrypted = [(p ^ c) for (p, c) in zip(plaintext, self._remaining_counter)]
-        self._remaining_counter = self._remaining_counter[len(encrypted) :]
+        self._remaining_counter = self._remaining_counter[len(encrypted):]
 
         return _bytes_to_string(encrypted)
 
@@ -3893,7 +3896,7 @@ class AESModeOfOperationGCM(AESModeOfOperationCTR):
         iv = iv + b"\x00\x00\x00\x02"
         iv_int = 0
         for i in xrange(0, len(iv), 4):
-            iv_int = (iv_int << 32) + struct.unpack(">I", iv[i : i + 4])[0]
+            iv_int = (iv_int << 32) + struct.unpack(">I", iv[i: i + 4])[0]
         AESModeOfOperationCTR.__init__(self, key, counter=Counter(iv_int))
 
 

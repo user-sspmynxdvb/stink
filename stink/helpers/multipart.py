@@ -34,9 +34,9 @@ class MultipartFormDataEncoder(object):
         return string
 
     def iter(
-        self,
-        fields: List[Tuple[str, Union[str, int]]],
-        files: List[Tuple[str, str, Union[BinaryIO, BytesIO]]],
+            self,
+            fields: List[Tuple[str, Union[str, int]]],
+            files: List[Tuple[str, str, Union[BinaryIO, BytesIO]]],
     ) -> str:
         """
         Writes fields and files to the body.
@@ -88,9 +88,9 @@ class MultipartFormDataEncoder(object):
         yield encoder(f"--{self.__boundary}--\r\n")
 
     def encode(
-        self,
-        fields: List[Tuple[str, Union[str, int]]],
-        files: List[Tuple[str, str, BinaryIO]],
+            self,
+            fields: List[Tuple[str, Union[str, int]]],
+            files: List[Tuple[str, str, BinaryIO]],
     ) -> Tuple[str, bytes]:
         """
         Converts specified files and fields to multipart/form-data format.

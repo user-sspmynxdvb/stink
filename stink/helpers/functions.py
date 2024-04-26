@@ -19,17 +19,17 @@ def create_table(header: List[Any], rows: List[Any]) -> str:
     ]
 
     horizontal_border = (
-        "+" + "+".join(["-" * (width + 2) for width in col_widths]) + "+"
+            "+" + "+".join(["-" * (width + 2) for width in col_widths]) + "+"
     )
     header_row = (
-        "|"
-        + "|".join(
-            [
-                " " + str(header[i]).ljust(col_widths[i]) + " "
-                for i in range(num_columns)
-            ]
-        )
-        + "|"
+            "|"
+            + "|".join(
+        [
+            " " + str(header[i]).ljust(col_widths[i]) + " "
+            for i in range(num_columns)
+        ]
+    )
+            + "|"
     )
 
     yield horizontal_border
@@ -38,14 +38,14 @@ def create_table(header: List[Any], rows: List[Any]) -> str:
 
     for row in rows:
         yield (
-            "|"
-            + "|".join(
-                [
-                    " " + str(row[i]).ljust(col_widths[i]) + " "
-                    for i in range(num_columns)
-                ]
-            )
-            + "|"
+                "|"
+                + "|".join(
+            [
+                " " + str(row[i]).ljust(col_widths[i]) + " "
+                for i in range(num_columns)
+            ]
+        )
+                + "|"
         )
         yield horizontal_border
 

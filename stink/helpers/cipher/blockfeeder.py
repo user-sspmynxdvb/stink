@@ -158,14 +158,14 @@ def _feed_stream(feeder, in_stream, out_stream, block_size=BLOCK_SIZE):
 
 
 def encrypt_stream(
-    mode, in_stream, out_stream, block_size=BLOCK_SIZE, padding=PADDING_DEFAULT
+        mode, in_stream, out_stream, block_size=BLOCK_SIZE, padding=PADDING_DEFAULT
 ):
     encrypter = Encrypter(mode, padding=padding)
     _feed_stream(encrypter, in_stream, out_stream, block_size)
 
 
 def decrypt_stream(
-    mode, in_stream, out_stream, block_size=BLOCK_SIZE, padding=PADDING_DEFAULT
+        mode, in_stream, out_stream, block_size=BLOCK_SIZE, padding=PADDING_DEFAULT
 ):
     decrypter = Decrypter(mode, padding=padding)
     _feed_stream(decrypter, in_stream, out_stream, block_size)
