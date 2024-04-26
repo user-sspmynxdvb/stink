@@ -1,5 +1,4 @@
 import ctypes
-from io import BytesIO
 from typing import Union, List, Tuple, AnyStr, Optional
 from zipfile import ZipFile, ZIP_DEFLATED
 
@@ -10,7 +9,6 @@ class MemoryStorage:
     """
 
     def __init__(self):
-        self.__buffer = BytesIO()
         self.__files = []
 
     def add_from_memory(self, source_path: str, content: Union[str, bytes]) -> None:

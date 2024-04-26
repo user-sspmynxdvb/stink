@@ -1,4 +1,3 @@
-pip install getmac
 pip install zstandard
 pip install nuitka
 
